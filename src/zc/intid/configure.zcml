@@ -1,0 +1,22 @@
+<configure xmlns="http://namespaces.zope.org/zope">
+
+  <class class=".utility.IntIds">
+
+    <require
+        permission="zope.Public"
+        interface=".IIntIdsQuery"
+        />
+
+    <require
+        permission="zope.ManageContent"
+        interface=".IIntIdsSet"
+        />
+
+    <require
+        permission="zope.Public"
+        interface=".IIntIdsManage"
+        />
+
+  </class>
+
+</configure>
