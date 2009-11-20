@@ -26,7 +26,6 @@ import random
 import zc.intid
 import zope.event
 import zope.interface
-import zope.location
 import zope.security.proxy
 
 
@@ -43,11 +42,7 @@ class IntIds(persistent.Persistent):
 
     zope.interface.implements(
         zc.intid.IIntIds,
-        zc.intid.IIntIdsSubclass,
-        zope.location.ILocation)
-
-    __parent__ = None
-    __name__ = None
+        zc.intid.IIntIdsSubclass)
 
     _v_nextid = None
 
