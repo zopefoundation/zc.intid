@@ -209,6 +209,29 @@ class TestIntIds(unittest.TestCase):
         self.assertEquals(obj.id2, uid2)
         self.assert_(u2.getObject(uid2) is obj)
 
+    def test_duplicate_id_generation(self):
+        # If an overridden ``generateId`` method generates an id that's
+        # already used, the ``register`` method will detect that an
+        # raise an exception.
+
+        u = self.createIntIds()
+        u.generateId = lambda ob: 42
+
+        # Register an object, consuming the id our generator provides:
+        obj = P()
+        uid = u.register(obj)
+        self.assertEquals(uid, 42)
+        self.assertEquals(obj.iid, 42)
+
+        # Check that the exception is raised:
+        self.assertRaises(ValueError, u.register, P())
+
+        # Verify that the original registration isn't compromised:
+        self.assert_(u.getObject(42) is obj)
+        self.assert_(u.queryObject(42) is obj)
+        self.assertEquals(u.getId(obj), uid)
+        self.assertEquals(u.queryId(obj), uid)
+
 
 class TestIntIds64(TestIntIds):
 
