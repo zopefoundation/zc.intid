@@ -37,7 +37,8 @@ class IntIds(persistent.Persistent):
     """This utility provides a two way mapping between objects and
     integer ids.
 
-    IKeyReferences to objects are stored in the indexes.
+    The objects are stored directly in the internal structures.
+
     """
 
     zope.interface.implements(

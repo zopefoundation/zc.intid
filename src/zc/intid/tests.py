@@ -45,6 +45,14 @@ class TestIntIds(unittest.TestCase):
             zc.intid.IIntIds, self.createIntIds())
 
     def test_non_keyreferences(self):
+        #
+        # This test, copied from zope.intid, was used in that context to
+        # determine that failed adaptaions to IKeyReference did not
+        # cause unexpected behaviors from the API.
+        #
+        # In zc.intid, this simple ensures that the behaviors don't
+        # differ from that of zope.intid.
+        #
         u = self.createIntIds()
         obj = object()
 
