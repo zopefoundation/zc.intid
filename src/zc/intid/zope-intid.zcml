@@ -1,0 +1,24 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:zcml="http://namespaces.zope.org/zcml"
+    >
+
+  <!-- Make your zc.intid utilities also provide the parallel
+       zope.intid interfaces.
+       -->
+
+  <!-- For "modern" int id utilities (zope.intid): -->
+  <configure zcml:condition="installed zope.intid">
+    <class class=".utility.IntIds">
+      <interface interface="zope.intid.interfaces.IIntIds"/>
+    </class>
+  </configure>
+
+  <!-- For "classic" int id utilities (zope.app.intid): -->
+  <configure zcml:condition="not:installed zope.intid">
+    <class class=".utility.IntIds">
+      <interface interface="zope.app.intid.interfaces.IIntIds"/>
+    </class>
+  </configure>
+
+</configure>
