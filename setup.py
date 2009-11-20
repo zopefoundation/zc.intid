@@ -25,7 +25,7 @@ setuptools.setup(
     version="1.0.0dev",
     author="Zope Corporation and Contributors",
     author_email="zope-dev@zope.org",
-    description="Conflict-Free Integer Id Utility",
+    description="Reduced-conflict Integer Id Utility",
     long_description=read("README.txt"),
     keywords="zope3 integer id utility",
     classifiers=[
