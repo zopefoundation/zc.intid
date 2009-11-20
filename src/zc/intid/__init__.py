@@ -50,12 +50,20 @@ class IIntIdsSet(zope.interface.Interface):
         """Register an object and returns a unique id generated for it.
 
         If the object is already registered, its id is returned anyway.
+
+        If not already registered, the registration is made and an
+        ``IIdAddedEvent`` is generated.
+
         """
 
     def unregister(ob):
         """Remove the object from the indexes.
 
         KeyError is raised if ob is not registered previously.
+
+        An ``IIdRemovedEvent`` is triggered for successful
+        unregistrations.
+
         """
 
 class IIntIdsManage(zope.interface.Interface):
