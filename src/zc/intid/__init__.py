@@ -14,6 +14,15 @@
 """\
 Interfaces for the unique id utility.
 
+Note that most of these interfaces present identical method signatures
+to those of their zope.intid counterparts.  This includes everything
+that comprises the ``IIntIds`` interface.
+
+Note that the contracts for these APIs differs, primarily in not
+requiring ``IKeyReference`` support.
+
+The IIntIdsSubclassOverride and event interfaces are new.
+
 """
 
 import zope.interface
@@ -83,8 +92,28 @@ class IIntIds(IIntIdsSet, IIntIdsQuery, IIntIdsManage):
     """
 
 
-class IIntIdsSubclassOverride(zope.interface.Interface):
-    """Methods that subclasses can usefully override."""
+class IIntIdsSubclass(zope.interface.Interface):
+    """Additional interface that subclasses can usefully use."""
+
+    family = zope.interface.Attribute(
+        """BTree family used for this id utility.
+
+        This will be either BTree.family32 or BTree.family64.
+
+        This may not be modified, but may be used to create additional
+        structures of the same integer family as the ``refs`` structure.
+
+        """)
+
+    refs = zope.interface.Attribute(
+        """BTree mapping from id to object.
+
+        Subclasses can use this to determine whether an id has already
+        been assigned.
+
+        This should not be directly modified by subclasses.
+
+        """)
 
     def generateId(ob):
         """Return a new iid that isn't already used.
@@ -93,6 +122,8 @@ class IIntIdsSubclassOverride(zope.interface.Interface):
 
         The default behavior is to generate arbitrary integers without
         reference to the objects they're generated for.
+
+        This method may be overriden.
 
         """
 

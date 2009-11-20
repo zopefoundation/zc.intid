@@ -43,7 +43,7 @@ class IntIds(persistent.Persistent):
 
     zope.interface.implements(
         zc.intid.IIntIds,
-        zc.intid.IIntIdsSubclassOverride,
+        zc.intid.IIntIdsSubclass,
         zope.location.ILocation)
 
     __parent__ = None

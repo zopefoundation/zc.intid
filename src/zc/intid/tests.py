@@ -41,8 +41,9 @@ class TestIntIds(unittest.TestCase):
         zope.event.subscribers.remove(self.events.append)
 
     def test_interface(self):
-        zope.interface.verify.verifyObject(
-            zc.intid.IIntIds, self.createIntIds())
+        u = self.createIntIds()
+        zope.interface.verify.verifyObject(zc.intid.IIntIds, u)
+        zope.interface.verify.verifyObject(zc.intid.IIntIdsSubclass, u)
 
     def test_non_keyreferences(self):
         #
