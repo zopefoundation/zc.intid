@@ -33,7 +33,13 @@ of those methods.
 Changes
 =======
 
-1.0.0 (unreleased)
+1.0.1 (2011-06-27)
+------------------
+
+- Make the behavior of the utility's `getId` method consistent with
+  zope.intid in regard to its handling of proxied objects.
+
+1.0.0 (2011-02-21)
 ------------------
 
 - Initial release.
