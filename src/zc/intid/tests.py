@@ -22,6 +22,8 @@ import zc.intid
 import zc.intid.utility
 import zope.event
 import zope.interface.verify
+import zope.security.checker
+import zope.security.proxy
 
 
 class P(object):
@@ -44,6 +46,40 @@ class TestIntIds(unittest.TestCase):
         u = self.createIntIds()
         zope.interface.verify.verifyObject(zc.intid.IIntIds, u)
         zope.interface.verify.verifyObject(zc.intid.IIntIdsSubclass, u)
+
+    def test_proxies(self):
+        # This test ensures that the `getId` method exhibits the same
+        # behavior when passed a proxy as it does in zope.intid.
+        u = self.createIntIds()
+        obj = P()
+        iid = u.register(obj)
+        proxied = zope.security.proxy.Proxy(obj,
+                    zope.security.checker.CheckerPublic)
+        # Passing `getId` a proxied object yields the correct id
+        self.assertEquals(u.getId(proxied), iid)
+        # `getId` raises a KeyError with the proxied object if it isn't
+        # in its mapping.
+        obj.iid = None
+        try:
+            u.getId(proxied)
+        except KeyError, exc:
+            pass
+        self.assert_(exc.args[0] is proxied)
+        obj.iid = -1
+        try:
+            u.getId(proxied)
+        except KeyError, exc:
+            pass
+        self.assert_(exc.args[0] is proxied)
+        obj = P()
+        obj.iid = iid
+        proxied = zope.security.proxy.Proxy(obj,
+                    zope.security.checker.CheckerPublic)
+        try:
+            u.getId(proxied)
+        except KeyError, exc:
+            pass
+        self.assert_(exc.args[0] is proxied)
 
     def test_non_keyreferences(self):
         #

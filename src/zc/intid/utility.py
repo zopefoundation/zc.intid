@@ -74,10 +74,11 @@ class IntIds(persistent.Persistent):
         return default
 
     def getId(self, ob):
-        uid = getattr(unwrap(ob), self.attribute, None)
+        unwrapped = unwrap(ob)
+        uid = getattr(unwrapped, self.attribute, None)
         if uid is None:
             raise KeyError(ob)
-        if self.refs[uid] is not ob:
+        if uid not in self.refs or self.refs[uid] is not unwrapped:
             # not an id that matches
             raise KeyError(ob)
         return uid
