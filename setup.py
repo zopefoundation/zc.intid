@@ -28,7 +28,7 @@ setuptools.setup(
     author="Zope Corporation and Contributors",
     author_email="zope-dev@zope.org",
     description="Reduced-conflict Integer Id Utility",
-    long_description=read("README.txt") + read('CHANGES.rst'),
+    long_description=read("README.rst") + '\n\n' + read('CHANGES.rst'),
     keywords="zope3 integer id utility",
     classifiers=[
         #"Development Status :: 5 - Production/Stable",
