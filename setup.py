@@ -17,16 +17,18 @@ import setuptools
 
 
 def read(*rnames):
-    return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
+    with open(os.path.join(os.path.dirname(__file__), *rnames)) as f:
+        return f.read()
 
+version = "2.0.0.dev0"
 
 setuptools.setup(
     name="zc.intid",
-    version="0",
+    version=version,
     author="Zope Corporation and Contributors",
     author_email="zope-dev@zope.org",
     description="Reduced-conflict Integer Id Utility",
-    long_description=read("README.txt"),
+    long_description=read("README.rst") + '\n\n' + read('CHANGES.rst'),
     keywords="zope3 integer id utility",
     classifiers=[
         #"Development Status :: 5 - Production/Stable",
@@ -37,19 +39,26 @@ setuptools.setup(
         "Natural Language :: English",
         "Operating System :: OS Independent",
         "Topic :: Internet :: WWW/HTTP",
-        "Framework :: Zope3"],
-    url="http://pypi.python.org/pypi/zc.intid",
+        "Framework :: Zope3",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: Implementation :: CPython",
+        "Programming Language :: Python :: Implementation :: PyPy",
+    ],
+    url="http://github.com/zopefoundation/zc.intid",
     license="ZPL 2.1",
     packages=setuptools.find_packages("src"),
     package_dir={"": "src"},
     namespace_packages=["zc"],
-    install_requires=["setuptools",
-                      "ZODB3",
-                      "zope.component",
-                      "zope.event",
-                      "zope.interface",
-                      "zope.security",
-                      ],
+    install_requires=[
+        "setuptools",
+        "BTrees",
+        "zope.component",
+        "zope.event",
+        "zope.interface",
+        "zope.security",
+    ],
     include_package_data=True,
     zip_safe=False,
-    )
+    test_suite="zc.intid.tests",
+)
