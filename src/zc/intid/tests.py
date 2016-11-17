@@ -56,30 +56,27 @@ class TestIntIds(unittest.TestCase):
         proxied = zope.security.proxy.Proxy(obj,
                     zope.security.checker.CheckerPublic)
         # Passing `getId` a proxied object yields the correct id
-        self.assertEquals(u.getId(proxied), iid)
+        self.assertEqual(u.getId(proxied), iid)
         # `getId` raises a KeyError with the proxied object if it isn't
         # in its mapping.
         obj.iid = None
-        try:
+        with self.assertRaises(KeyError) as ex:
             u.getId(proxied)
-        except KeyError, exc:
-            pass
-        self.assert_(exc.args[0] is proxied)
+        self.assertIs(ex.exception.args[0], proxied)
+
         obj.iid = -1
-        try:
+        with self.assertRaises(KeyError) as ex:
             u.getId(proxied)
-        except KeyError, exc:
-            pass
-        self.assert_(exc.args[0] is proxied)
+        self.assertIs(ex.exception.args[0], proxied)
+
+
         obj = P()
         obj.iid = iid
         proxied = zope.security.proxy.Proxy(obj,
                     zope.security.checker.CheckerPublic)
-        try:
+        with self.assertRaises(KeyError) as ex:
             u.getId(proxied)
-        except KeyError, exc:
-            pass
-        self.assert_(exc.args[0] is proxied)
+        self.assertIs(ex.exception.args[0], proxied)
 
     def test_non_keyreferences(self):
         #
@@ -93,8 +90,8 @@ class TestIntIds(unittest.TestCase):
         u = self.createIntIds()
         obj = object()
 
-        self.assert_(u.queryId(obj) is None)
-        self.assert_(u.unregister(obj) is None)
+        self.assertIsNone(u.queryId(obj))
+        self.assertIsNone(u.unregister(obj))
         self.assertRaises(KeyError, u.getId, obj)
 
     def test(self):
@@ -104,42 +101,42 @@ class TestIntIds(unittest.TestCase):
         self.assertRaises(KeyError, u.getId, obj)
         self.assertRaises(KeyError, u.getId, P())
 
-        self.assert_(u.queryId(obj) is None)
-        self.assert_(u.queryId(obj, 42) is 42)
-        self.assert_(u.queryId(P(), 42) is 42)
-        self.assert_(u.queryObject(42) is None)
-        self.assert_(u.queryObject(42, obj) is obj)
+        self.assertIsNone(u.queryId(obj))
+        self.assertIs(u.queryId(obj, 42), 42)
+        self.assertIs(u.queryId(P(), 42), 42)
+        self.assertIsNone(u.queryObject(42))
+        self.assertIs(u.queryObject(42, obj), obj)
 
         uid = u.register(obj)
-        self.assert_(u.getObject(uid) is obj)
-        self.assert_(u.queryObject(uid) is obj)
-        self.assertEquals(u.getId(obj), uid)
-        self.assertEquals(u.queryId(obj), uid)
-        self.assertEquals(obj.iid, uid)
+        self.assertIs(u.getObject(uid), obj)
+        self.assertIs(u.queryObject(uid), obj)
+        self.assertEqual(u.getId(obj), uid)
+        self.assertEqual(u.queryId(obj), uid)
+        self.assertEqual(obj.iid, uid)
 
         # Check the id-added event:
-        self.assertEquals(len(self.events), 1)
+        self.assertEqual(len(self.events), 1)
         event = self.events[-1]
-        self.assert_(zc.intid.IIdAddedEvent.providedBy(event))
-        self.assert_(event.object is obj)
-        self.assert_(event.idmanager is u)
-        self.assertEquals(event.id, uid)
+        self.assertTrue(zc.intid.IIdAddedEvent.providedBy(event))
+        self.assertIs(event.object, obj)
+        self.assertIs(event.idmanager, u)
+        self.assertEqual(event.id, uid)
 
         uid2 = u.register(obj)
-        self.assertEquals(uid, uid2)
+        self.assertEqual(uid, uid2)
 
         u.unregister(obj)
-        self.assert_(obj.iid is None)
+        self.assertIsNone(obj.iid)
         self.assertRaises(KeyError, u.getObject, uid)
         self.assertRaises(KeyError, u.getId, obj)
 
         # Check the id-removed event:
-        self.assertEquals(len(self.events), 3)
+        self.assertEqual(len(self.events), 3)
         event = self.events[-1]
-        self.assert_(zc.intid.IIdRemovedEvent.providedBy(event))
-        self.assert_(event.object is obj)
-        self.assert_(event.idmanager is u)
-        self.assertEquals(event.id, uid)
+        self.assertTrue(zc.intid.IIdRemovedEvent.providedBy(event))
+        self.assertIs(event.object, obj)
+        self.assertIs(event.idmanager, u)
+        self.assertEqual(event.id, uid)
 
     def test_btree_long(self):
         # This is a somewhat arkward test, that *simulates* the border case
@@ -151,52 +148,52 @@ class TestIntIds(unittest.TestCase):
         # delivered by the randint call in the code
         obj = P()
         uid = u.register(obj)
-        self.assertEquals(2**31-1, uid)
+        self.assertEqual(2**31-1, uid)
         # Make an explicit tuple here to avoid implicit type casts on 2**31-1
         # by the btree code
-        self.failUnless(2**31-1 in tuple(u.refs.keys()))
+        self.assertIn(2**31-1, tuple(u.refs.keys()))
 
     def test_len_items(self):
         u = self.createIntIds()
         obj = P()
 
-        self.assertEquals(len(u), 0)
-        self.assertEquals(u.items(), [])
-        self.assertEquals(list(u), [])
+        self.assertEqual(len(u), 0)
+        self.assertEqual(u.items(), [])
+        self.assertEqual(list(u), [])
 
         uid = u.register(obj)
-        self.assertEquals(len(u), 1)
-        self.assertEquals(u.items(), [(uid, obj)])
-        self.assertEquals(list(u), [uid])
+        self.assertEqual(len(u), 1)
+        self.assertEqual(u.items(), [(uid, obj)])
+        self.assertEqual(list(u), [uid])
 
         obj2 = P()
         obj2.__parent__ = obj
 
         uid2 = u.register(obj2)
-        self.assertEquals(len(u), 2)
+        self.assertEqual(len(u), 2)
         result = u.items()
         expected = [(uid, obj), (uid2, obj2)]
         result.sort()
         expected.sort()
-        self.assertEquals(result, expected)
+        self.assertEqual(result, expected)
         result = list(u)
         expected = [uid, uid2]
         result.sort()
         expected.sort()
-        self.assertEquals(result, expected)
+        self.assertEqual(result, expected)
 
         u.unregister(obj)
         u.unregister(obj2)
-        self.assertEquals(len(u), 0)
-        self.assertEquals(u.items(), [])
+        self.assertEqual(len(u), 0)
+        self.assertEqual(u.items(), [])
 
     def test_getenrateId(self):
         u = self.createIntIds()
-        self.assertEquals(u._v_nextid, None)
+        self.assertEqual(u._v_nextid, None)
         id1 = u.generateId(None)
-        self.assert_(u._v_nextid is not None)
+        self.assertIsNotNone(u._v_nextid)
         id2 = u.generateId(None)
-        self.assert_(id1 + 1, id2)
+        self.assertEqual(id1 + 1, id2)
         u.refs[id2 + 1] = "Taken"
         id3 = u.generateId(None)
         self.assertNotEqual(id3, id2 + 1)
@@ -231,19 +228,19 @@ class TestIntIds(unittest.TestCase):
         uid2 = u2.register(obj)
 
         self.assertNotEqual(uid1, uid2)
-        self.assertEquals(obj.id1, uid1)
-        self.assertEquals(obj.id2, uid2)
+        self.assertEqual(obj.id1, uid1)
+        self.assertEqual(obj.id2, uid2)
 
-        self.assert_(u1.queryObject(uid2) is None)
-        self.assert_(u2.queryObject(uid1) is None)
+        self.assertIsNone(u1.queryObject(uid2))
+        self.assertIsNone(u2.queryObject(uid1))
 
         # Unregistering from on utility has no affect on the attribute
         # assignment for the other.
 
         u1.unregister(obj)
-        self.assert_(obj.id1 is None)
-        self.assertEquals(obj.id2, uid2)
-        self.assert_(u2.getObject(uid2) is obj)
+        self.assertIsNone(obj.id1)
+        self.assertEqual(obj.id2, uid2)
+        self.assertIs(u2.getObject(uid2),obj)
 
     def test_duplicate_id_generation(self):
         # If an overridden ``generateId`` method generates an id that's
@@ -256,17 +253,17 @@ class TestIntIds(unittest.TestCase):
         # Register an object, consuming the id our generator provides:
         obj = P()
         uid = u.register(obj)
-        self.assertEquals(uid, 42)
-        self.assertEquals(obj.iid, 42)
+        self.assertEqual(uid, 42)
+        self.assertEqual(obj.iid, 42)
 
         # Check that the exception is raised:
         self.assertRaises(ValueError, u.register, P())
 
         # Verify that the original registration isn't compromised:
-        self.assert_(u.getObject(42) is obj)
-        self.assert_(u.queryObject(42) is obj)
-        self.assertEquals(u.getId(obj), uid)
-        self.assertEquals(u.queryId(obj), uid)
+        self.assertIs(u.getObject(42), obj)
+        self.assertIs(u.queryObject(42), obj)
+        self.assertEqual(u.getId(obj), uid)
+        self.assertEqual(u.queryId(obj), uid)
 
 
 class TestIntIds64(TestIntIds):

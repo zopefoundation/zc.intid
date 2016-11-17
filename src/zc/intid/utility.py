@@ -31,7 +31,7 @@ import zope.security.proxy
 
 unwrap = zope.security.proxy.removeSecurityProxy
 
-
+@zope.interface.implementer(zc.intid.IIntIds, zc.intid.IIntIdsSubclass)
 class IntIds(persistent.Persistent):
     """This utility provides a two way mapping between objects and
     integer ids.
@@ -39,10 +39,6 @@ class IntIds(persistent.Persistent):
     The objects are stored directly in the internal structures.
 
     """
-
-    zope.interface.implements(
-        zc.intid.IIntIds,
-        zc.intid.IIntIdsSubclass)
 
     _v_nextid = None
 
@@ -134,10 +130,10 @@ class Event(object):
         self.idmanager = idmanager
         self.id = id
 
-
+@zope.interface.implementer(zc.intid.IIdAddedEvent)
 class AddedEvent(Event):
-    zope.interface.implements(zc.intid.IIdAddedEvent)
+    pass
 
-
+@zope.interface.implementer(zc.intid.IIdRemovedEvent)
 class RemovedEvent(Event):
-    zope.interface.implements(zc.intid.IIdRemovedEvent)
+    pass

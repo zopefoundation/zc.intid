@@ -3,8 +3,9 @@ sudo: false
 python:
   - pypy-5.4.1
   - 2.7
+  - 3.5
 script:
-  - python setup.py test
+  - coverage run setup.py test
 after_success:
   - coveralls
 notifications:
