@@ -281,5 +281,7 @@ def test_suite():
         unittest.makeSuite(TestIntIds64),
         ])
 
-if __name__ == '__main__':
+test_suite() # coverage
+
+if __name__ == '__main__': # pragma: no cover
     unittest.main()
