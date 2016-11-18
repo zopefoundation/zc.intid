@@ -22,6 +22,10 @@ def read(*rnames):
 
 version = "2.0.0.dev0"
 
+tests_require = [
+    'zope.configuration',
+]
+
 setuptools.setup(
     name="zc.intid",
     version=version,
@@ -59,6 +63,10 @@ setuptools.setup(
         "zope.interface",
         "zope.security",
     ],
+    tests_require=tests_require,
+    extras_require={
+        'test': tests_require,
+    },
     include_package_data=True,
     zip_safe=False,
     test_suite="zc.intid.tests",

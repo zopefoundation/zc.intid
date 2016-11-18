@@ -272,11 +272,59 @@ class TestIntIds64(TestIntIds):
         return zc.intid.utility.IntIds(attribute, family=BTrees.family64)
 
 
+class TestZopeIntidZcml(unittest.TestCase):
+
+    _BARE_IMPLEMENTS = tuple(sorted(zope.interface.implementedBy(zc.intid.utility.IntIds)))
+
+    def _load_file(self):
+        import zope.configuration.xmlconfig
+        zope.configuration.xmlconfig.file('zope-intid.zcml', package=zc.intid)
+
+    def _check_only_zc_interface(self):
+        provs = tuple(sorted(zope.interface.implementedBy(zc.intid.utility.IntIds)))
+        self.assertEqual(provs, self._BARE_IMPLEMENTS)
+
+    def test_no_zope_intid(self):
+        self._check_only_zc_interface()
+        self._load_file()
+        self._check_only_zc_interface()
+
+    def test_zope_intid_available(self):
+        import types
+        import sys
+        self.assertNotIn('zope.intid.interfaces', sys.modules)
+        self._check_only_zc_interface()
+
+        zope_intid_interfaces = types.ModuleType('zope.intid.interfaces')
+        class I(zope.interface.Interface):
+            pass
+        zope_intid_interfaces.IIntIds = I
+
+        sys.modules['zope.intid'] = types.ModuleType('zope.intid')
+        sys.modules['zope.intid.interfaces'] = zope_intid_interfaces
+
+
+        try:
+            self._check_only_zc_interface()
+            self._load_file()
+
+            implements_now = tuple(zope.interface.implementedBy(zc.intid.utility.IntIds))
+            self.assertIn(I, implements_now)
+
+            # Cleanup
+            zope.interface.classImplementsOnly(zc.intid.utility.IntIds, *self._BARE_IMPLEMENTS)
+        finally:
+            del sys.modules['zope.intid']
+            del sys.modules['zope.intid.interfaces']
+
+        self._check_only_zc_interface()
+
 def test_suite():
     return unittest.TestSuite([
         unittest.makeSuite(TestIntIds),
         unittest.makeSuite(TestIntIds64),
-        ])
+        unittest.makeSuite(TestZopeIntidZcml),
+    ])
 
 test_suite() # coverage
 

@@ -10,6 +10,9 @@
 - Add Python 3 support.
 - Drop support for Python less than 2.7.
 - Remove ZODB3 dependency in favor of explicit dependencies on BTrees.
+- The zope-intid.zcml file included in this package now works to make
+  the IntId utility from this package implement the zope.intids
+  interface, if that package is installed.
 
 1.0.1 (2011-06-27)
 ==================
