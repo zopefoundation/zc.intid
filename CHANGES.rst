@@ -7,6 +7,7 @@
 
 - Add continuous integration testing for supported Python versions.
 - Add PyPy support.
+- Add Python 3 support.
 - Drop support for Python less than 2.7.
 - Remove ZODB3 dependency in favor of explicit dependencies on BTrees.
 
