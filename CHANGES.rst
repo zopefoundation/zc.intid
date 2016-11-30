@@ -5,6 +5,8 @@
 2.0.0 (unreleased)
 ==================
 
+- Add zope.lifecycleevent subscribers. You must include ``zubscribers.zcml`` 
+  to use these. See https://github.com/zopefoundation/zc.intid/issues/5
 - Documentation is now hosted at http://zcintid.readthedocs.io
 - Add continuous integration testing for supported Python versions.
 - Add PyPy support.

@@ -1,0 +1,23 @@
+<!-- -*- mode: nxml -*- -->
+<configure  xmlns="http://namespaces.zope.org/zope"
+            xmlns:i18n="http://namespaces.zope.org/i18n"
+            xmlns:zcml="http://namespaces.zope.org/zcml">
+
+
+    <include package="zope.component" file="meta.zcml" />
+    <include package="zope.security" file="meta.zcml" />
+    <include package="zope.component" />
+    <include package="zope.security" />
+
+
+    <subscriber handler=".subscribers.addIntIdSubscriber" />
+    <subscriber handler=".subscribers.removeIntIdSubscriber" />
+
+    <!-- Dispatchers. Register for both zope.intid and zc.intid -->
+    <subscriber
+        handler=".subscribers.intIdEventNotify"
+        for="zope.intid.interfaces.IIntIdEvent" />
+    <subscriber
+        handler=".subscribers.intIdEventNotify"
+        for="zc.intid.interfaces.IIntIdEvent" />
+</configure>

@@ -15,15 +15,64 @@
 Tests for the unique id utility.
 
 """
+import sys
 
 import BTrees
+from persistent.interfaces import IPersistent
 import unittest
-import zc.intid
-import zc.intid.utility
+
+from zc.intid import AfterIdAddedEvent
+from zc.intid import BeforeIdRemovedEvent
+from zc.intid import IIdAddedEvent
+from zc.intid import IIdEvent
+from zc.intid import IIdRemovedEvent
+from zc.intid import IIntIds
+from zc.intid import IIntIdsSubclass
+from zc.intid import ISubscriberEvent
+
+from zc.intid.subscribers import addIntIdSubscriber
+from zc.intid.subscribers import intIdEventNotify
+from zc.intid.subscribers import removeIntIdSubscriber
+
+from zc.intid.utility import AddedEvent
+from zc.intid.utility import IntIds
+from zc.intid.utility import RemovedEvent
+
+from zope.component import getSiteManager
+from zope.component import getGlobalSiteManager
+from zope.component import provideAdapter
+from zope.component import provideHandler
+from zope.component import testing, eventtesting
+
+from zope.component.interfaces import ISite, IComponentLookup
+
+from zope.interface import Interface
+from zope.interface.verify import verifyObject
+
+from zope.intid.interfaces import IIntIdEvent
+from zope.intid.interfaces import IntIdAddedEvent
+from zope.intid.interfaces import IntIdRemovedEvent
+try:
+    from zope.intid.interfaces import ObjectMissingError
+except ImportError:
+    ObjectMissingError = KeyError
+
+from zope.keyreference.interfaces import IKeyReference
+
+from zope.lifecycleevent import ObjectAddedEvent
+from zope.lifecycleevent import ObjectRemovedEvent
+
+from zope.security.checker import CheckerPublic
+from zope.security.proxy import Proxy
+
+from zope.site.folder import rootFolder
+from zope.site.hooks import setSite, setHooks, resetHooks
+from zope.site.interfaces import IFolder
+from zope.site.site import SiteManagerAdapter, LocalSiteManager
+
+from zope.traversing.testing import setUp as traversingSetUp
+
 import zope.event
-import zope.interface.verify
-import zope.security.checker
-import zope.security.proxy
 
 
 class P(object):
@@ -33,7 +82,7 @@ class P(object):
 class TestIntIds(unittest.TestCase):
 
     def createIntIds(self, attribute="iid"):
-        return zc.intid.utility.IntIds(attribute)
+        return IntIds(attribute)
 
     def setUp(self):
         self.events = []
@@ -44,8 +93,8 @@ class TestIntIds(unittest.TestCase):
 
     def test_interface(self):
         u = self.createIntIds()
-        zope.interface.verify.verifyObject(zc.intid.IIntIds, u)
-        zope.interface.verify.verifyObject(zc.intid.IIntIdsSubclass, u)
+        verifyObject(IIntIds, u)
+        verifyObject(IIntIdsSubclass, u)
 
     def test_proxies(self):
         # This test ensures that the `getId` method exhibits the same
@@ -53,8 +102,8 @@ class TestIntIds(unittest.TestCase):
         u = self.createIntIds()
         obj = P()
         iid = u.register(obj)
-        proxied = zope.security.proxy.Proxy(obj,
-                    zope.security.checker.CheckerPublic)
+        proxied = Proxy(obj,
+                        CheckerPublic)
         # Passing `getId` a proxied object yields the correct id
         self.assertEqual(u.getId(proxied), iid)
         # `getId` raises a KeyError with the proxied object if it isn't
@@ -72,8 +121,8 @@ class TestIntIds(unittest.TestCase):
 
         obj = P()
         obj.iid = iid
-        proxied = zope.security.proxy.Proxy(obj,
-                    zope.security.checker.CheckerPublic)
+        proxied = Proxy(obj,
+                        CheckerPublic)
         with self.assertRaises(KeyError) as ex:
             u.getId(proxied)
         self.assertIs(ex.exception.args[0], proxied)
@@ -117,7 +166,7 @@ class TestIntIds(unittest.TestCase):
         # Check the id-added event:
         self.assertEqual(len(self.events), 1)
         event = self.events[-1]
-        self.assertTrue(zc.intid.IIdAddedEvent.providedBy(event))
+        self.assertTrue(IIdAddedEvent.providedBy(event))
         self.assertIs(event.object, obj)
         self.assertIs(event.idmanager, u)
         self.assertEqual(event.id, uid)
@@ -133,7 +182,7 @@ class TestIntIds(unittest.TestCase):
         # Check the id-removed event:
         self.assertEqual(len(self.events), 3)
         event = self.events[-1]
-        self.assertTrue(zc.intid.IIdRemovedEvent.providedBy(event))
+        self.assertTrue(IIdRemovedEvent.providedBy(event))
         self.assertIs(event.object, obj)
         self.assertIs(event.idmanager, u)
         self.assertEqual(event.id, uid)
@@ -167,7 +216,6 @@ class TestIntIds(unittest.TestCase):
         self.assertEqual(list(u), [uid])
 
         obj2 = P()
-        obj2.__parent__ = obj
 
         uid2 = u.register(obj2)
         self.assertEqual(len(u), 2)
@@ -269,19 +317,29 @@ class TestIntIds(unittest.TestCase):
 class TestIntIds64(TestIntIds):
 
     def createIntIds(self, attribute="iid"):
-        return zc.intid.utility.IntIds(attribute, family=BTrees.family64)
+        return IntIds(attribute, family=BTrees.family64)
 
 
 class TestZopeIntidZcml(unittest.TestCase):
 
-    _BARE_IMPLEMENTS = tuple(sorted(zope.interface.implementedBy(zc.intid.utility.IntIds)))
+    _BARE_IMPLEMENTS = tuple(sorted(zope.interface.implementedBy(IntIds)))
+
+    def setUp(self):
+        self.zi = sys.modules['zope.intid']
+        self.zii = sys.modules['zope.intid.interfaces']
+        sys.modules['zope.intid'] = None
+
+    def tearDown(self):
+        sys.modules['zope.intid'] = self.zi
+        sys.modules['zope.intid.interfaces'] = self.zii
 
     def _load_file(self):
-        import zope.configuration.xmlconfig
-        zope.configuration.xmlconfig.file('zope-intid.zcml', package=zc.intid)
+        from zope.configuration import xmlconfig
+        import zc.intid
+        xmlconfig.file('zope-intid.zcml', package=zc.intid)
 
     def _check_only_zc_interface(self):
-        provs = tuple(sorted(zope.interface.implementedBy(zc.intid.utility.IntIds)))
+        provs = tuple(sorted(zope.interface.implementedBy(IntIds)))
         self.assertEqual(provs, self._BARE_IMPLEMENTS)
 
     def test_no_zope_intid(self):
@@ -291,8 +349,8 @@ class TestZopeIntidZcml(unittest.TestCase):
 
     def test_zope_intid_available(self):
         import types
-        import sys
-        self.assertNotIn('zope.intid.interfaces', sys.modules)
+        #self.assertNotIn('zope.intid.interfaces', sys.modules)
+        self.assertRaises(ImportError, __import__, 'zope.intid')
         self._check_only_zc_interface()
 
         zope_intid_interfaces = types.ModuleType('zope.intid.interfaces')
@@ -308,22 +366,198 @@ class TestZopeIntidZcml(unittest.TestCase):
             self._check_only_zc_interface()
             self._load_file()
 
-            implements_now = tuple(zope.interface.implementedBy(zc.intid.utility.IntIds))
+            implements_now = tuple(zope.interface.implementedBy(IntIds))
             self.assertIn(I, implements_now)
 
             # Cleanup
-            zope.interface.classImplementsOnly(zc.intid.utility.IntIds, *self._BARE_IMPLEMENTS)
+            zope.interface.classImplementsOnly(IntIds, *self._BARE_IMPLEMENTS)
         finally:
             del sys.modules['zope.intid']
             del sys.modules['zope.intid.interfaces']
 
         self._check_only_zc_interface()
 
+def createSiteManager(folder, setsite=False):
+    if not ISite.providedBy(folder):
+        folder.setSiteManager(LocalSiteManager(folder))
+    if setsite:
+        setSite(folder)
+    return folder.getSiteManager()
+
+class KeyReferenceStub(object):
+
+    def __init__(self, obj):
+        self.obj = obj
+
+class ReferenceSetupMixin(object):
+    """Registers adapters ILocation->IConnection and IPersistent->IReference"""
+
+    def setUp(self):
+        testing.setUp()
+        eventtesting.setUp()
+        traversingSetUp()
+        setHooks()
+        provideAdapter(SiteManagerAdapter, (Interface,), IComponentLookup)
+
+        self.root = rootFolder()
+        createSiteManager(self.root, setsite=True)
+
+        provideAdapter(
+            KeyReferenceStub, (IPersistent, ), IKeyReference)
+
+    def tearDown(self):
+        resetHooks()
+        setSite()
+        testing.tearDown()
+        self.assertIs(getSiteManager(), getGlobalSiteManager())
+
+
+class TestSubscribers(ReferenceSetupMixin, unittest.TestCase):
+
+    __parent__ = None
+    __name__ = None
+
+    def setUp(self):
+        from zope.site.folder import Folder
+
+        ReferenceSetupMixin.setUp(self)
+
+        sm = getSiteManager(self.root)
+        self.utility = IntIds("iid")
+        sm.registerUtility(self.utility, name='1', provided=IIntIds)
+
+        self.root['folder1'] = Folder()
+        self.root['folder1']['folder1_1'] = self.folder1_1 = Folder()
+        self.root['folder1']['folder1_1']['folder1_1_1'] = Folder()
+
+        sm1_1 = createSiteManager(self.folder1_1)
+        self.utility1 = IntIds("liid")
+        sm1_1.registerUtility(self.utility1, name='2', provided=IIntIds)
+
+        provideHandler(intIdEventNotify, (IIdEvent,))
+        provideHandler(intIdEventNotify, (IIntIdEvent,))
+
+        self.raw_events = []
+        self.obj_events = []
+
+        def obj_event(*args):
+            self.obj_events.append(args)
+
+        provideHandler(self.raw_events.append, [IIntIdEvent])
+        provideHandler(self.raw_events.append, [IIdEvent])
+
+        provideHandler(obj_event, [IFolder, IIntIdEvent])
+        provideHandler(obj_event, [IFolder, IIdEvent])
+
+        provideHandler(self.raw_events.append, [ISubscriberEvent])
+
+    def test_no_KeyReference(self):
+        # Nothing happens for something that can't be a KeyReference
+        addIntIdSubscriber(self, ObjectAddedEvent(self))
+        removeIntIdSubscriber(self, ObjectRemovedEvent(self))
+
+        self.assertEqual([], self.raw_events)
+        self.assertEqual([], self.obj_events)
+
+    def test_removeIntIdSubscriber(self):
+        parent_folder = self.root['folder1']['folder1_1']
+        folder = self.root['folder1']['folder1_1']['folder1_1_1']
+        id = self.utility.register(folder)
+        id1 = self.utility1.register(folder)
+        self.assertEqual(self.utility.getObject(id), folder)
+        self.assertEqual(self.utility1.getObject(id1), folder)
+        setSite(self.folder1_1)
+
+        events = self.raw_events
+        objevents = self.obj_events
+
+        del events[:]
+        del objevents[:]
+
+        # This should unregister the object in all utilities, not just the
+        # nearest one.
+        removeIntIdSubscriber(folder, ObjectRemovedEvent(parent_folder))
+
+        self.assertRaises(ObjectMissingError, self.utility.getObject, id)
+        self.assertRaises(ObjectMissingError, self.utility1.getObject, id1)
+
+        self.assertEqual([BeforeIdRemovedEvent,
+                          IntIdRemovedEvent,
+                          RemovedEvent,
+                          RemovedEvent],
+                         [type(x) for x in events])
+        for e in events:
+            self.assertEqual(e.object, folder)
+
+        for e in events[:2]:
+            self.assertEqual(e.original_event.object, parent_folder)
+
+        self.assertEqual([IntIdRemovedEvent,
+                          RemovedEvent,
+                          RemovedEvent],
+                         [type(x[1]) for x in objevents])
+        self.assertEqual(objevents[0][0], folder)
+        self.assertEqual(objevents[0][1].object, folder)
+        self.assertEqual(objevents[0][1].original_event.object, parent_folder)
+
+    def test_addIntIdSubscriber(self):
+        parent_folder = self.root['folder1']['folder1_1']
+        folder = self.root['folder1']['folder1_1']['folder1_1_1']
+        setSite(self.folder1_1)
+
+        events = self.raw_events
+        objevents = self.obj_events
+
+        del events[:]
+        del objevents[:]
+
+        # This should register the object in all utilities, not just the
+        # nearest one.
+        addIntIdSubscriber(folder, ObjectAddedEvent(parent_folder))
+
+        # Check that the folder got registered
+        id = self.utility.getId(folder)
+        id1 = self.utility1.getId(folder)
+
+
+        self.assertEqual([AddedEvent,
+                          AddedEvent,
+                          IntIdAddedEvent,
+                          AfterIdAddedEvent,],
+                         [type(x) for x in events])
+        for e in events:
+            self.assertEqual(e.object, folder)
+
+        for e in events[2:]:
+            self.assertEqual(e.original_event.object, parent_folder)
+
+        self.assertEqual([AddedEvent,
+                          AddedEvent,
+                          IntIdAddedEvent,],
+                         [type(x[1]) for x in objevents])
+
+        for e in objevents:
+            self.assertEqual(e[1].object, folder)
+            self.assertEqual(e[0], folder)
+
+        self.assertEqual(objevents[2][1].original_event.object, parent_folder)
+
+        idmap = events[2].idmap
+        self.assertEqual(len(idmap), 2)
+        self.assertEqual(idmap[self.utility], id)
+        self.assertEqual(idmap[self.utility1], id1)
+
+        for e in events[:2]:
+            self.assertIn(e.idmanager, idmap)
+            self.assertEqual(e.id, e.idmanager.getId(e.object))
+
+
 def test_suite():
     return unittest.TestSuite([
         unittest.makeSuite(TestIntIds),
         unittest.makeSuite(TestIntIds64),
         unittest.makeSuite(TestZopeIntidZcml),
+        unittest.makeSuite(TestSubscribers),
     ])
 
 test_suite() # coverage

@@ -24,6 +24,7 @@ version = read("version.txt").strip()
 
 tests_require = [
     'zope.configuration',
+    'zope.site',
 ]
 
 setuptools.setup(
@@ -62,6 +63,10 @@ setuptools.setup(
         "zope.event",
         "zope.interface",
         "zope.security",
+        # Subscribers
+        "zope.lifecycleevent",
+        "zope.intid",
+        "zope.keyreference",
     ],
     tests_require=tests_require,
     extras_require={

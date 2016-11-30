@@ -24,7 +24,7 @@ import BTrees
 import persistent
 import random
 import zc.intid
-import zope.event
+from zope.event import notify
 import zope.interface
 import zope.security.proxy
 
@@ -110,7 +110,7 @@ class IntIds(persistent.Persistent):
                 raise ValueError("id generator returned used id")
         self.refs[uid] = ob
         setattr(ob, self.attribute, uid)
-        zope.event.notify(AddedEvent(ob, self, uid))
+        notify(AddedEvent(ob, self, uid))
         return uid
 
     def unregister(self, ob):
@@ -120,7 +120,7 @@ class IntIds(persistent.Persistent):
             return
         del self.refs[uid]
         setattr(ob, self.attribute, None)
-        zope.event.notify(RemovedEvent(ob, self, uid))
+        notify(RemovedEvent(ob, self, uid))
 
 
 class Event(object):
