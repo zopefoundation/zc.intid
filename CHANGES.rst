@@ -5,6 +5,7 @@
 2.0.0 (unreleased)
 ==================
 
+- Documentation is now hosted at http://zcintid.readthedocs.io
 - Add continuous integration testing for supported Python versions.
 - Add PyPy support.
 - Add Python 3 support.

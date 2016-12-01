@@ -18,3 +18,4 @@ eggs/
 include/
 lib/
 parts/
+doc/_build

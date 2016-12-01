@@ -20,7 +20,7 @@ def read(*rnames):
     with open(os.path.join(os.path.dirname(__file__), *rnames)) as f:
         return f.read()
 
-version = "2.0.0.dev0"
+version = read("version.txt").strip()
 
 tests_require = [
     'zope.configuration',

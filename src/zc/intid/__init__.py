@@ -11,17 +11,17 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""\
+"""
 Interfaces for the unique id utility.
 
 Note that most of these interfaces present identical method signatures
-to those of their zope.intid counterparts.  This includes everything
-that comprises the ``IIntIds`` interface.
+to those of their :mod:`zope.intid` counterparts.  This includes everything
+that comprises the :class:`IIntIds` interface.
 
 Note that the contracts for these APIs differs, primarily in not
-requiring ``IKeyReference`` support.
+requiring :class:`zope.keyreference.interfaces.IKeyReference` support.
 
-The IIntIdsSubclassOverride and event interfaces are new.
+The :class:`IIntIdsSubclass` and event interfaces are new.
 
 """
 
