@@ -18,11 +18,8 @@ install:
   - pip install -U pip setuptools
   - pip install -U coverage coveralls
   - pip install -U -e .[test]
-# cache: pip seems not to work if `install` is replaced (https://github.com/travis-ci/travis-ci/issues/3239)
-cache:
-  directories:
-    - $HOME/.cache/pip
-    - $HOME/.venv
+
+cache: pip
 
 before_cache:
     - rm -f $HOME/.cache/pip/log/debug.log
