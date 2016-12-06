@@ -349,7 +349,6 @@ class TestZopeIntidZcml(unittest.TestCase):
 
     def test_zope_intid_available(self):
         import types
-        #self.assertNotIn('zope.intid.interfaces', sys.modules)
         self.assertRaises(ImportError, __import__, 'zope.intid')
         self._check_only_zc_interface()
 

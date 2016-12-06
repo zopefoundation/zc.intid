@@ -187,7 +187,7 @@ class IBeforeIdRemovedEvent(ISubscriberEvent):
 
     This event is guaranteed to be the first event fired by the
     subscriber that removes IDs. It will only be fired if at least
-    one utility will
+    one utility will remove an ID.
     """
 
 @zope.interface.implementer(IBeforeIdRemovedEvent)
