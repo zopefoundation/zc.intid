@@ -8,6 +8,7 @@ zc.intid provides an reduced conflict integer ID utility.
    :maxdepth: 1
 
    api
+   subscribers
 
 .. toctree::
    :maxdepth: 2

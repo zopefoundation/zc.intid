@@ -142,18 +142,73 @@ class IIdEvent(zope.interface.Interface):
 
 
 class IIdRemovedEvent(IIdEvent):
-    """A unique id will be removed
+    """
+    A unique id will be removed.
 
     The event is published before the unique id is removed
     from the utility so that the indexing objects can unindex the object.
-
     """
 
 
 class IIdAddedEvent(IIdEvent):
-    """A unique id has been added
-
-    The event gets sent when an object is registered in a
-    unique id utility.
-
     """
+    A unique id has been added.
+
+    The event gets sent when an object is registered in a unique id
+    utility.
+    """
+
+class ISubscriberEvent(zope.interface.Interface):
+    """
+    An event fired by the subscribers in relation to another event.
+    """
+
+    object = zope.interface.Attribute(
+        "The object related to this event")
+
+    original_event = zope.interface.Attribute(
+        "The ObjectEvent related to this event")
+
+class IAfterIdAddedEvent(ISubscriberEvent):
+    """
+    Fired after all utilities have registered unique ids.
+
+    This event is guaranteed to be the last event fired by the
+    subscribers that register ids. It will be fired exactly once, no
+    matter how many utilities registered ids.
+    """
+
+    idmap = zope.interface.Attribute(
+        "The dictionary that holds an (utility -> id) mapping of created ids")
+
+class IBeforeIdRemovedEvent(ISubscriberEvent):
+    """
+    Fired before any utility removes an object's unique ID.
+
+    This event is guaranteed to be the first event fired by the
+    subscriber that removes IDs. It will only be fired if at least
+    one utility will remove an ID.
+    """
+
+@zope.interface.implementer(IBeforeIdRemovedEvent)
+class BeforeIdRemovedEvent(object):
+    """
+    The event which is published before the unique id is removed
+    from the utility so that the catalogs can unindex the object.
+    """
+
+    def __init__(self, o, event):
+        self.object = o
+        self.original_event = event
+
+@zope.interface.implementer(IAfterIdAddedEvent)
+class AfterIdAddedEvent(object):
+    """
+    The event which gets sent when an object is registered in a
+    unique id utility.
+    """
+
+    def __init__(self, o, event, idmap=None):
+        self.object = o
+        self.idmap = idmap
+        self.original_event = event

@@ -1,6 +1,6 @@
 ##############################################################################
 #
-# Copyright (c) 2001, 2002, 2009 Zope Foundation and Contributors.
+# Copyright (c) 2001, 2002, 2009, 2016 Zope Foundation and Contributors.
 # All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
@@ -11,19 +11,30 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""\
+"""
 Tests for the unique id utility.
 
 """
 
+
 import BTrees
+
 import unittest
-import zc.intid
-import zc.intid.utility
+
+from zc.intid import IIdAddedEvent
+from zc.intid import IIdRemovedEvent
+from zc.intid import IIntIds
+from zc.intid import IIntIdsSubclass
+
+from zc.intid.utility import IntIds
+
+from zope.interface.verify import verifyObject
+
+
+from zope.security.checker import CheckerPublic
+from zope.security.proxy import Proxy
+
 import zope.event
-import zope.interface.verify
-import zope.security.checker
-import zope.security.proxy
 
 
 class P(object):
@@ -33,7 +44,7 @@ class P(object):
 class TestIntIds(unittest.TestCase):
 
     def createIntIds(self, attribute="iid"):
-        return zc.intid.utility.IntIds(attribute)
+        return IntIds(attribute)
 
     def setUp(self):
         self.events = []
@@ -44,8 +55,8 @@ class TestIntIds(unittest.TestCase):
 
     def test_interface(self):
         u = self.createIntIds()
-        zope.interface.verify.verifyObject(zc.intid.IIntIds, u)
-        zope.interface.verify.verifyObject(zc.intid.IIntIdsSubclass, u)
+        verifyObject(IIntIds, u)
+        verifyObject(IIntIdsSubclass, u)
 
     def test_proxies(self):
         # This test ensures that the `getId` method exhibits the same
@@ -53,8 +64,8 @@ class TestIntIds(unittest.TestCase):
         u = self.createIntIds()
         obj = P()
         iid = u.register(obj)
-        proxied = zope.security.proxy.Proxy(obj,
-                    zope.security.checker.CheckerPublic)
+        proxied = Proxy(obj,
+                        CheckerPublic)
         # Passing `getId` a proxied object yields the correct id
         self.assertEqual(u.getId(proxied), iid)
         # `getId` raises a KeyError with the proxied object if it isn't
@@ -72,8 +83,8 @@ class TestIntIds(unittest.TestCase):
 
         obj = P()
         obj.iid = iid
-        proxied = zope.security.proxy.Proxy(obj,
-                    zope.security.checker.CheckerPublic)
+        proxied = Proxy(obj,
+                        CheckerPublic)
         with self.assertRaises(KeyError) as ex:
             u.getId(proxied)
         self.assertIs(ex.exception.args[0], proxied)
@@ -117,7 +128,7 @@ class TestIntIds(unittest.TestCase):
         # Check the id-added event:
         self.assertEqual(len(self.events), 1)
         event = self.events[-1]
-        self.assertTrue(zc.intid.IIdAddedEvent.providedBy(event))
+        self.assertTrue(IIdAddedEvent.providedBy(event))
         self.assertIs(event.object, obj)
         self.assertIs(event.idmanager, u)
         self.assertEqual(event.id, uid)
@@ -133,7 +144,7 @@ class TestIntIds(unittest.TestCase):
         # Check the id-removed event:
         self.assertEqual(len(self.events), 3)
         event = self.events[-1]
-        self.assertTrue(zc.intid.IIdRemovedEvent.providedBy(event))
+        self.assertTrue(IIdRemovedEvent.providedBy(event))
         self.assertIs(event.object, obj)
         self.assertIs(event.idmanager, u)
         self.assertEqual(event.id, uid)
@@ -167,7 +178,6 @@ class TestIntIds(unittest.TestCase):
         self.assertEqual(list(u), [uid])
 
         obj2 = P()
-        obj2.__parent__ = obj
 
         uid2 = u.register(obj2)
         self.assertEqual(len(u), 2)
@@ -269,61 +279,13 @@ class TestIntIds(unittest.TestCase):
 class TestIntIds64(TestIntIds):
 
     def createIntIds(self, attribute="iid"):
-        return zc.intid.utility.IntIds(attribute, family=BTrees.family64)
+        return IntIds(attribute, family=BTrees.family64)
 
-
-class TestZopeIntidZcml(unittest.TestCase):
-
-    _BARE_IMPLEMENTS = tuple(sorted(zope.interface.implementedBy(zc.intid.utility.IntIds)))
-
-    def _load_file(self):
-        import zope.configuration.xmlconfig
-        zope.configuration.xmlconfig.file('zope-intid.zcml', package=zc.intid)
-
-    def _check_only_zc_interface(self):
-        provs = tuple(sorted(zope.interface.implementedBy(zc.intid.utility.IntIds)))
-        self.assertEqual(provs, self._BARE_IMPLEMENTS)
-
-    def test_no_zope_intid(self):
-        self._check_only_zc_interface()
-        self._load_file()
-        self._check_only_zc_interface()
-
-    def test_zope_intid_available(self):
-        import types
-        import sys
-        self.assertNotIn('zope.intid.interfaces', sys.modules)
-        self._check_only_zc_interface()
-
-        zope_intid_interfaces = types.ModuleType('zope.intid.interfaces')
-        class I(zope.interface.Interface):
-            pass
-        zope_intid_interfaces.IIntIds = I
-
-        sys.modules['zope.intid'] = types.ModuleType('zope.intid')
-        sys.modules['zope.intid.interfaces'] = zope_intid_interfaces
-
-
-        try:
-            self._check_only_zc_interface()
-            self._load_file()
-
-            implements_now = tuple(zope.interface.implementedBy(zc.intid.utility.IntIds))
-            self.assertIn(I, implements_now)
-
-            # Cleanup
-            zope.interface.classImplementsOnly(zc.intid.utility.IntIds, *self._BARE_IMPLEMENTS)
-        finally:
-            del sys.modules['zope.intid']
-            del sys.modules['zope.intid.interfaces']
-
-        self._check_only_zc_interface()
 
 def test_suite():
     return unittest.TestSuite([
         unittest.makeSuite(TestIntIds),
         unittest.makeSuite(TestIntIds64),
-        unittest.makeSuite(TestZopeIntidZcml),
     ])
 
 test_suite() # coverage
