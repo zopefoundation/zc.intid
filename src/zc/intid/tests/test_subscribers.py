@@ -18,6 +18,7 @@ Tests for the lifecycle subscribers.
 from persistent.interfaces import IPersistent
 import unittest
 
+import zc.intid
 from zc.intid import AfterIdAddedEvent
 from zc.intid import BeforeIdRemovedEvent
 
@@ -28,7 +29,6 @@ from zc.intid import IIntIds
 from zc.intid import ISubscriberEvent
 
 from zc.intid.subscribers import addIntIdSubscriber
-from zc.intid.subscribers import intIdEventNotify
 from zc.intid.subscribers import removeIntIdSubscriber
 
 from zc.intid.utility import AddedEvent
@@ -37,12 +37,15 @@ from zc.intid.utility import RemovedEvent
 
 from zope.component import getSiteManager
 from zope.component import getGlobalSiteManager
+from zope.component import handle
 from zope.component import provideAdapter
 from zope.component import provideHandler
 from zope.component import testing as componenttesting
 from zope.component import eventtesting
 
 from zope.component.interfaces import ISite, IComponentLookup
+
+from zope.configuration import xmlconfig
 
 from zope.interface import Interface
 
@@ -111,6 +114,9 @@ class TestSubscribers(ReferenceSetupMixin, unittest.TestCase):
     def setUp(self):
         ReferenceSetupMixin.setUp(self)
 
+        # Install the event handlers
+        xmlconfig.file('subscribers.zcml', package=zc.intid)
+
         sm = getSiteManager(self.root)
         self.utility = IntIds("iid")
         sm.registerUtility(self.utility, name='1', provided=IIntIds)
@@ -123,8 +129,6 @@ class TestSubscribers(ReferenceSetupMixin, unittest.TestCase):
         self.utility1 = IntIds("liid")
         sm1_1.registerUtility(self.utility1, name='2', provided=IIntIds)
 
-        provideHandler(intIdEventNotify, (IIdEvent,))
-        provideHandler(intIdEventNotify, (IIntIdEvent,))
 
         self.raw_events = []
         self.obj_events = []
@@ -161,8 +165,9 @@ class TestSubscribers(ReferenceSetupMixin, unittest.TestCase):
         del self.obj_events[:]
 
         # This should unregister the object in all utilities, not just the
-        # nearest one.
-        removeIntIdSubscriber(self.child_folder, ObjectRemovedEvent(self.folder1_1))
+        # nearest one. Go through "handle" instead of directly calling `removeIntIdSubscriber`
+        # to be sure the ZCML is correct
+        handle(self.child_folder, ObjectRemovedEvent(self.folder1_1))
 
         self.assertRaises(ObjectMissingError, self.utility.getObject, utility_id)
         self.assertRaises(ObjectMissingError, self.utility1.getObject, utility1_id)
@@ -188,8 +193,9 @@ class TestSubscribers(ReferenceSetupMixin, unittest.TestCase):
 
     def test_addIntIdSubscriber(self):
         # This should register the object in all utilities, not just the
-        # nearest one.
-        addIntIdSubscriber(self.child_folder, ObjectAddedEvent(self.folder1_1))
+        # nearest one. Go through "handle" instead of directly calling `addIntIdSubscriber`
+        # to be sure the ZCML is correct
+        handle(self.child_folder, ObjectAddedEvent(self.folder1_1))
 
         # Check that the folder got registered
         utility_id = self.utility.getId(self.child_folder)

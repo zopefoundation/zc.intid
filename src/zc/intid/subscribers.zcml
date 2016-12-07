@@ -19,5 +19,5 @@
         for="zope.intid.interfaces.IIntIdEvent" />
     <subscriber
         handler=".subscribers.intIdEventNotify"
-        for="zc.intid.interfaces.IIntIdEvent" />
+        for="zc.intid.IIdEvent" />
 </configure>
