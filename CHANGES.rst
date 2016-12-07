@@ -6,7 +6,7 @@
 ==================
 
 - Add zope.lifecycleevent subscribers. You must include ``subscribers.zcml``
-  to use these. See https://github.com/zopefoundation/zc.intid/issues/5
+  to use these and have :mod:`zope.intid` installed. See :issue:`5`.
 - Documentation is now hosted at http://zcintid.readthedocs.io
 - Add continuous integration testing for supported Python versions.
 - Add PyPy support.
@@ -16,6 +16,9 @@
 - The zope-intid.zcml file included in this package now works to make
   the IntId utility from this package implement the zope.intids
   interface, if that package is installed.
+- Interfaces and event implementations have been refactored into the
+  new module :mod:`zc.intid.interfaces`. Backwards compatibility
+  aliases remain for the old names. See :issue:`9`.
 
 1.0.1 (2011-06-27)
 ==================

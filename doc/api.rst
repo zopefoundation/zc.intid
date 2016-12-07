@@ -5,7 +5,7 @@
 Interfaces
 ==========
 
-.. automodule:: zc.intid
+.. automodule:: zc.intid.interfaces
 
 Implementation
 ==============

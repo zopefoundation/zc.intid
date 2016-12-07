@@ -350,6 +350,8 @@ texinfo_documents = [
 intersphinx_mapping = {
     'https://docs.python.org/': None,
     'http://zopeintid.readthedocs.io/en/latest/': None,
+    'http://zopekeyreference.readthedocs.io/en/latest/': None,
+    'http://zopelifecycleevent.readthedocs.io/en/latest/': None,
 }
 
 extlinks = {'issue': ('https://github.com/zopefoundation/zc.intid/issues/%s',

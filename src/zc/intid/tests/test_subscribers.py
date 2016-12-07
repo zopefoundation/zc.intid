@@ -19,21 +19,19 @@ from persistent.interfaces import IPersistent
 import unittest
 
 import zc.intid
-from zc.intid import AfterIdAddedEvent
-from zc.intid import BeforeIdRemovedEvent
 
-from zc.intid import IIdEvent
-
-from zc.intid import IIntIds
-
-from zc.intid import ISubscriberEvent
+from zc.intid.interfaces import AddedEvent
+from zc.intid.interfaces import AfterIdAddedEvent
+from zc.intid.interfaces import BeforeIdRemovedEvent
+from zc.intid.interfaces import IIdEvent
+from zc.intid.interfaces import IIntIds
+from zc.intid.interfaces import ISubscriberEvent
+from zc.intid.interfaces import RemovedEvent
 
 from zc.intid.subscribers import addIntIdSubscriber
 from zc.intid.subscribers import removeIntIdSubscriber
 
-from zc.intid.utility import AddedEvent
 from zc.intid.utility import IntIds
-from zc.intid.utility import RemovedEvent
 
 from zope.component import getSiteManager
 from zope.component import getGlobalSiteManager
