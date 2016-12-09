@@ -50,10 +50,7 @@ from zope.interface import Interface
 from zope.intid.interfaces import IIntIdEvent
 from zope.intid.interfaces import IntIdAddedEvent
 from zope.intid.interfaces import IntIdRemovedEvent
-try:
-    from zope.intid.interfaces import ObjectMissingError
-except ImportError:
-    ObjectMissingError = KeyError
+from zope.intid.interfaces import ObjectMissingError
 
 from zope.keyreference.interfaces import IKeyReference
 
