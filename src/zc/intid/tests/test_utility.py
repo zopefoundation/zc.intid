@@ -308,6 +308,28 @@ class TestIntIds(unittest.TestCase):
         self.assertRaises(POSKeyError, u.getId, obj)
         self.assertRaises(POSKeyError, u.queryId, obj)
 
+    def test_unsettable_attr_doesnt_corrupt(self):
+        # An error on setting the attribute doesn't leak a reference to
+        # the object
+        from ZODB.POSException import POSKeyError
+        u = self.createIntIds()
+
+        class WithSlots(object):
+            __slots__ = ()
+
+        obj = WithSlots()
+
+        self.assertRaises(AttributeError, u.register, obj)
+        self.assertEqual(0, len(u))
+
+        class Broken(object):
+            def __setattr__(self, name, value):
+
+                raise POSKeyError()
+
+        obj = Broken()
+        self.assertRaises(POSKeyError, u.register, obj)
+        self.assertEqual(0, len(u))
 
 
 class TestIntIds64(TestIntIds):

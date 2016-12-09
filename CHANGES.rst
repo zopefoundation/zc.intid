@@ -27,6 +27,9 @@
 - Propagate ``POSKeyError`` from ``queryId`` instead of returning the
   default object. This exception indicates a corrupt database, not a
   missing object. The ``queryObject`` function already behaved this way.
+- Attempting to ``register`` an object that cannot have the utility's
+  attribute set on it (for example, it has restrictive ``__slots__``)
+  no longer corrupts the utility's state.
 
 1.0.1 (2011-06-27)
 ==================

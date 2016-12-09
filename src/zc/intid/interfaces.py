@@ -50,17 +50,18 @@ class IIntIdsQuery(zope.interface.Interface):
         """
         Return an object by its unique id
 
-        Raises :exc:`zope.intid.interfaces.ObjectMissingError` if
-        there is no object with that id.
+        :raises zope.intid.interfaces.ObjectMissingError: if
+          there is no object with that id.
         """
 
     def getId(ob):
         """
         Get a unique id of an object.
 
-        Raises :exc:`zope.intid.interfaces.IntIdMissingError` if
-        there is no id for that object. Raises :exc:`IntIdMismatchError`
-        if the recorded id doesn't match the id of the object.
+        :raises zope.intid.interfaces.IntIdMissingError: if
+           there is no id for that object.
+        :raises zc.intid.interfaces.IntIdMismatchError: if the recorded id
+           doesn't match the id of the object.
         """
 
     def queryObject(uid, default=None):
@@ -96,9 +97,10 @@ class IIntIdsSet(zope.interface.Interface):
         """
 
     def unregister(ob):
-        """Remove the object from the indexes.
+        """
+        Remove the object from the indexes.
 
-        KeyError is raised if ob is not registered previously.
+        If the *ob* is not previously registered, this has no effect.
 
         An :class:`IIdRemovedEvent` is triggered for successful
         unregistrations.

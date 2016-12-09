@@ -137,7 +137,12 @@ class IntIds(persistent.Persistent):
             if uid in self.refs:
                 raise IntIdInUseError("id generator returned used id")
         self.refs[uid] = ob
-        setattr(ob, self.attribute, uid)
+        try:
+            setattr(ob, self.attribute, uid)
+        except:
+            # cleanup our mess
+            del self.refs[uid]
+            raise
         notify(AddedEvent(ob, self, uid))
         return uid
 
@@ -146,6 +151,7 @@ class IntIds(persistent.Persistent):
         uid = self.queryId(ob)
         if uid is None:
             return
+        # This should not raise KeyError, we checked that in queryId
         del self.refs[uid]
         setattr(ob, self.attribute, None)
         notify(RemovedEvent(ob, self, uid))
