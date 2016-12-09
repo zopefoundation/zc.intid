@@ -113,9 +113,9 @@ from zope.intid.interfaces import IntIdRemovedEvent
 
 from zope.keyreference.interfaces import IKeyReference
 
-from zc.intid import IIntIds
-from zc.intid import BeforeIdRemovedEvent
-from zc.intid import AfterIdAddedEvent
+from zc.intid.interfaces import IIntIds
+from zc.intid.interfaces import BeforeIdRemovedEvent
+from zc.intid.interfaces import AfterIdAddedEvent
 
 def _utilities_and_key(ob):
     utilities = tuple(component.getAllUtilitiesRegisteredFor(IIntIds))

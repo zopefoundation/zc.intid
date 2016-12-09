@@ -21,10 +21,10 @@ import BTrees
 
 import unittest
 
-from zc.intid import IIdAddedEvent
-from zc.intid import IIdRemovedEvent
-from zc.intid import IIntIds
-from zc.intid import IIntIdsSubclass
+from zc.intid.interfaces import IIdAddedEvent
+from zc.intid.interfaces import IIdRemovedEvent
+from zc.intid.interfaces import IIntIds
+from zc.intid.interfaces import IIntIdsSubclass
 
 from zc.intid.utility import IntIds
 

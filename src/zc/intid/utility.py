@@ -20,18 +20,22 @@ This functionality can be used in cataloging.
 
 """
 
+from zc.intid.interfaces import AddedEvent
+from zc.intid.interfaces import IIntIds
+from zc.intid.interfaces import IIntIdsSubclass
+from zc.intid.interfaces import RemovedEvent
+
+from zope.event import notify
+
+from zope.interface import implementer
+
+from zope.security.proxy import removeSecurityProxy as unwrap
+
 import BTrees
 import persistent
 import random
-import zc.intid
-from zope.event import notify
-import zope.interface
-import zope.security.proxy
 
-
-unwrap = zope.security.proxy.removeSecurityProxy
-
-@zope.interface.implementer(zc.intid.IIntIds, zc.intid.IIntIdsSubclass)
+@implementer(IIntIds, IIntIdsSubclass)
 class IntIds(persistent.Persistent):
     """This utility provides a two way mapping between objects and
     integer ids.
@@ -121,19 +125,3 @@ class IntIds(persistent.Persistent):
         del self.refs[uid]
         setattr(ob, self.attribute, None)
         notify(RemovedEvent(ob, self, uid))
-
-
-class Event(object):
-
-    def __init__(self, object, idmanager, id):
-        self.object = object
-        self.idmanager = idmanager
-        self.id = id
-
-@zope.interface.implementer(zc.intid.IIdAddedEvent)
-class AddedEvent(Event):
-    pass
-
-@zope.interface.implementer(zc.intid.IIdRemovedEvent)
-class RemovedEvent(Event):
-    pass
