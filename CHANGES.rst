@@ -19,6 +19,17 @@
 - Interfaces and event implementations have been refactored into the
   new module :mod:`zc.intid.interfaces`. Backwards compatibility
   aliases remain for the old names. See :issue:`9`.
+- Raise more informative KeyError subclasses from the utility when intids
+  or objects cannot be found. This distinguishes them from errors
+  raised by normal dictionaries or BTrees, and is useful in unit
+  testing or when persisting intids or sharing them among processes
+  for later or concurrent use. See :issue:`8`
+- Propagate ``POSKeyError`` from ``queryId`` instead of returning the
+  default object. This exception indicates a corrupt database, not a
+  missing object. The ``queryObject`` function already behaved this way.
+- Attempting to ``register`` an object that cannot have the utility's
+  attribute set on it (for example, it has restrictive ``__slots__``)
+  no longer corrupts the utility's state.
 
 1.0.1 (2011-06-27)
 ==================

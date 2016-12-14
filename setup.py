@@ -65,7 +65,7 @@ setuptools.setup(
         "zope.security",
         # Subscribers
         "zope.lifecycleevent",
-        "zope.intid",
+        "zope.intid >= 4.2",
         "zope.keyreference",
     ],
     tests_require=tests_require,

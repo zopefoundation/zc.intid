@@ -27,6 +27,19 @@ The :class:`IIntIdsSubclass` and event interfaces are new.
 
 import zope.interface
 
+import zope.intid.interfaces
+
+class IntIdMismatchError(zope.intid.interfaces.IntIdMissingError):
+    """
+    Raised from ``getId`` if the id of an object doesn't match
+    what's recorded in the utility.
+    """
+
+class IntIdInUseError(ValueError):
+    """
+    Raised by the utility when ``register`` tries to reuse
+    an intid.
+    """
 
 class IIntIdsQuery(zope.interface.Interface):
     """
@@ -34,10 +47,21 @@ class IIntIdsQuery(zope.interface.Interface):
     """
 
     def getObject(uid):
-        """Return an object by its unique id"""
+        """
+        Return an object by its unique id
+
+        :raises zope.intid.interfaces.ObjectMissingError: if
+          there is no object with that id.
+        """
 
     def getId(ob):
-        """Get a unique id of an object.
+        """
+        Get a unique id of an object.
+
+        :raises zope.intid.interfaces.IntIdMissingError: if
+           there is no id for that object.
+        :raises zc.intid.interfaces.IntIdMismatchError: if the recorded id
+           doesn't match the id of the object.
         """
 
     def queryObject(uid, default=None):
@@ -73,9 +97,10 @@ class IIntIdsSet(zope.interface.Interface):
         """
 
     def unregister(ob):
-        """Remove the object from the indexes.
+        """
+        Remove the object from the indexes.
 
-        KeyError is raised if ob is not registered previously.
+        If the *ob* is not previously registered, this has no effect.
 
         An :class:`IIdRemovedEvent` is triggered for successful
         unregistrations.
@@ -131,6 +156,9 @@ class IIntIdsSubclass(zope.interface.Interface):
         reference to the objects they're generated for.
 
         This method may be overriden.
+
+        If this method returns an id that is already in use,
+        ``register`` will raise an :exc:`IntIdInUseError`.
 
         """
 

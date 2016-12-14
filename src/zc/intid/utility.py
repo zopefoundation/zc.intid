@@ -23,11 +23,28 @@ This functionality can be used in cataloging.
 from zc.intid.interfaces import AddedEvent
 from zc.intid.interfaces import IIntIds
 from zc.intid.interfaces import IIntIdsSubclass
+from zc.intid.interfaces import IntIdMismatchError
+from zc.intid.interfaces import IntIdInUseError
 from zc.intid.interfaces import RemovedEvent
 
 from zope.event import notify
 
 from zope.interface import implementer
+
+from zope.intid.interfaces import IntIdMissingError
+from zope.intid.interfaces import ObjectMissingError
+try:
+    # POSKeyError is a subclass of KeyError; in the cases where we
+    # catch KeyError for an item missing from a BTree, we still
+    # want to propagate this exception that indicates a corrupt database
+    # (as opposed to a corrupt IntIds)
+    from ZODB.POSException import POSKeyError as _POSKeyError
+except ImportError: # pragma: no cover (we run tests with ZODB installed)
+    # In practice, ZODB will probably be installed. But if not,
+    # then POSKeyError can never be generated, so use a unique
+    # exception that we'll never catch.
+    class _POSKeyError(BaseException):
+        pass
 
 from zope.security.proxy import removeSecurityProxy as unwrap
 
@@ -66,7 +83,12 @@ class IntIds(persistent.Persistent):
         return self.refs.iterkeys()
 
     def getObject(self, id):
-        return self.refs[id]
+        try:
+            return self.refs[id]
+        except _POSKeyError:
+            raise
+        except KeyError:
+            raise ObjectMissingError(id)
 
     def queryObject(self, id, default=None):
         if id in self.refs:
@@ -77,15 +99,17 @@ class IntIds(persistent.Persistent):
         unwrapped = unwrap(ob)
         uid = getattr(unwrapped, self.attribute, None)
         if uid is None:
-            raise KeyError(ob)
+            raise IntIdMissingError(ob)
         if uid not in self.refs or self.refs[uid] is not unwrapped:
             # not an id that matches
-            raise KeyError(ob)
+            raise IntIdMismatchError(ob)
         return uid
 
     def queryId(self, ob, default=None):
         try:
             return self.getId(ob)
+        except _POSKeyError:
+            raise
         except KeyError:
             return default
 
@@ -111,9 +135,14 @@ class IntIds(persistent.Persistent):
         if uid is None:
             uid = self.generateId(ob)
             if uid in self.refs:
-                raise ValueError("id generator returned used id")
+                raise IntIdInUseError("id generator returned used id")
         self.refs[uid] = ob
-        setattr(ob, self.attribute, uid)
+        try:
+            setattr(ob, self.attribute, uid)
+        except:
+            # cleanup our mess
+            del self.refs[uid]
+            raise
         notify(AddedEvent(ob, self, uid))
         return uid
 
@@ -122,6 +151,7 @@ class IntIds(persistent.Persistent):
         uid = self.queryId(ob)
         if uid is None:
             return
+        # This should not raise KeyError, we checked that in queryId
         del self.refs[uid]
         setattr(ob, self.attribute, None)
         notify(RemovedEvent(ob, self, uid))
