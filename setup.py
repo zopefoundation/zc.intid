@@ -33,7 +33,7 @@ setuptools.setup(
     author="Zope Corporation and Contributors",
     author_email="zope-dev@zope.org",
     description="Reduced-conflict Integer Id Utility",
-    long_description=read("README.rst") + '\n\n' + read('CHANGES.rst'),
+    long_description=read("README.rst"),
     keywords="zope3 integer id utility",
     classifiers=[
         #"Development Status :: 5 - Production/Stable",
@@ -51,7 +51,7 @@ setuptools.setup(
         "Programming Language :: Python :: Implementation :: CPython",
         "Programming Language :: Python :: Implementation :: PyPy",
     ],
-    url="http://github.com/zopefoundation/zc.intid",
+    url="http://zcintid.readthedocs.io",
     license="ZPL 2.1",
     packages=setuptools.find_packages("src"),
     package_dir={"": "src"},
