@@ -7,6 +7,9 @@ include tox.ini
 
 recursive-include src *
 
+recursive-include doc *.py
+recursive-include doc *.rst
+recursive-include doc Makefile
 
 global-exclude *.pyc
 global-exclude *.pyo
