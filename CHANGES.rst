@@ -2,7 +2,13 @@
  Changes
 =========
 
-2.0.0 (unreleased)
+2.0.1 (unreleased)
+==================
+
+- Nothing changed yet.
+
+
+2.0.0 (2016-12-16)
 ==================
 
 - Add zope.lifecycleevent subscribers. You must include ``subscribers.zcml``
