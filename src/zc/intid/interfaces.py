@@ -19,10 +19,11 @@ to those of their :mod:`zope.intid` counterparts.  This includes everything
 that comprises the :class:`IIntIds` interface.
 
 Note that the contracts for these APIs differs, primarily in not
-requiring :class:`zope.keyreference.interfaces.IKeyReference` support.
+requiring :class:`~zope.keyreference.interfaces.IKeyReference` support
+(however, the provided lifecycle event subscribers in
+:mod:`zc.intid.subscribers` *do* require this support).
 
 The :class:`IIntIdsSubclass` and event interfaces are new.
-
 """
 
 import zope.interface
