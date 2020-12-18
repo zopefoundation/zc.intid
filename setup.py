@@ -20,6 +20,7 @@ def read(*rnames):
     with open(os.path.join(os.path.dirname(__file__), *rnames)) as f:
         return f.read()
 
+
 version = read("version.txt").strip()
 
 tests_require = [
@@ -36,7 +37,7 @@ setuptools.setup(
     long_description=read("README.rst"),
     keywords="zope3 integer id utility",
     classifiers=[
-        #"Development Status :: 5 - Production/Stable",
+        # "Development Status :: 5 - Production/Stable",
         "Environment :: Web Environment",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: Zope Public License",
@@ -46,8 +47,14 @@ setuptools.setup(
         "Topic :: Internet :: WWW/HTTP",
         "Framework :: Zope :: 3",
         "Programming Language :: Python",
+        "Programming Language :: Python :: 2",
         "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.5",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: Implementation :: CPython",
         "Programming Language :: Python :: Implementation :: PyPy",
     ],
@@ -71,6 +78,11 @@ setuptools.setup(
     tests_require=tests_require,
     extras_require={
         'test': tests_require,
+        'docs': [
+            'Sphinx',
+            'repoze.sphinx.autointerface',
+            'sphinx_rtd_theme',
+        ]
     },
     include_package_data=True,
     zip_safe=False,

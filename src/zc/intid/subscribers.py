@@ -50,6 +50,7 @@ from zc.intid.interfaces import IIntIds
 from zc.intid.interfaces import BeforeIdRemovedEvent
 from zc.intid.interfaces import AfterIdAddedEvent
 
+
 def _utilities_and_key(ob):
     utilities = tuple(component.getAllUtilitiesRegisteredFor(IIntIds))
     # Don't even bother trying to adapt if no utilities
@@ -63,8 +64,8 @@ def addIntIdSubscriber(ob, event):
     an event for the catalogs. Notice that each utility will
     fire :class:`zc.intid.interfaces.IIdAddedEvent`; this subscriber
     will then fire one single :class:`zope.intid.interfaces.IIntIdAddedEvent`,
-    followed by one single :class:`zc.intid.interfaces.IAfterIdAddedEvent`; this
-    gives a guaranteed order such that :mod:`zope.catalog` and other Zope
+    followed by one single :class:`zc.intid.interfaces.IAfterIdAddedEvent`;
+    this gives a guaranteed order such that :mod:`zope.catalog` and other Zope
     event listeners will have fired.
     """
     utilities, key = _utilities_and_key(ob)
@@ -79,6 +80,7 @@ def addIntIdSubscriber(ob, event):
     # Notify the catalogs that this object was added.
     notify(IntIdAddedEvent(ob, event, idmap))
     notify(AfterIdAddedEvent(ob, event, idmap))
+
 
 @component.adapter(ILocation, IObjectRemovedEvent)
 def removeIntIdSubscriber(ob, event):
@@ -112,14 +114,16 @@ def removeIntIdSubscriber(ob, event):
             notify(IntIdRemovedEvent(ob, event))
         try:
             utility.unregister(ob)
-        except KeyError: # pragma: no cover
+        except KeyError:  # pragma: no cover
             # Ignoring POSKeyError and broken registrations
             pass
+
 
 def intIdEventNotify(event):
     """
     Event subscriber to dispatch IntIdEvent to interested adapters.
 
-    See subscribers.zcml for its registrations (it handles two types of events).
+    See subscribers.zcml for its registrations (it handles two types of
+    events).
     """
     handle(event.object, event)
