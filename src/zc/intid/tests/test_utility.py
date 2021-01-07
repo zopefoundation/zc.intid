@@ -155,7 +155,7 @@ class TestIntIds(unittest.TestCase):
         self.assertEqual(event.id, uid)
 
     def test_btree_long(self):
-        # This is a somewhat arkward test, that *simulates* the border case
+        # This is a somewhat awkward test, that *simulates* the border case
         # behaviour of the generateId method
         u = self.createIntIds()
         u._randrange = lambda x, y: int(2**31-1)

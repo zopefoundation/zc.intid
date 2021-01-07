@@ -119,8 +119,7 @@ class TestSubscribers(ReferenceSetupMixin, unittest.TestCase):
 
         self.root['folder1'] = Folder()
         self.root['folder1']['folder1_1'] = self.folder1_1 = Folder()
-        self.root['folder1']['folder1_1']['folder1_1_1'] = Folder()
-        self.child_folder = self.root['folder1']['folder1_1']['folder1_1_1']
+        self.folder_1_1['folder1_1_1'] = self.child_folder = Folder()
 
         sm1_1 = createSiteManager(self.folder1_1)
         self.utility1 = IntIds("liid")
