@@ -75,7 +75,6 @@ setuptools.setup(
         "zope.intid >= 4.2",
         "zope.keyreference",
     ],
-    tests_require=tests_require,
     extras_require={
         'test': tests_require,
         'docs': [
@@ -86,5 +85,4 @@ setuptools.setup(
     },
     include_package_data=True,
     zip_safe=False,
-    test_suite="zc.intid.tests",
 )
