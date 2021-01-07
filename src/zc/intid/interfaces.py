@@ -30,17 +30,20 @@ import zope.interface
 
 import zope.intid.interfaces
 
+
 class IntIdMismatchError(zope.intid.interfaces.IntIdMissingError):
     """
     Raised from ``getId`` if the id of an object doesn't match
     what's recorded in the utility.
     """
 
+
 class IntIdInUseError(ValueError):
     """
     Raised by the utility when ``register`` tries to reuse
     an intid.
     """
+
 
 class IIntIdsQuery(zope.interface.Interface):
     """
@@ -107,6 +110,7 @@ class IIntIdsSet(zope.interface.Interface):
         unregistrations.
 
         """
+
 
 class IIntIdsManage(zope.interface.Interface):
     """Some methods used by the view."""
@@ -194,6 +198,7 @@ class IIdAddedEvent(IIdEvent):
     utility.
     """
 
+
 class Event(object):
 
     def __init__(self, object, idmanager, id):
@@ -201,14 +206,15 @@ class Event(object):
         self.idmanager = idmanager
         self.id = id
 
+
 @zope.interface.implementer(IIdAddedEvent)
 class AddedEvent(Event):
     pass
 
+
 @zope.interface.implementer(IIdRemovedEvent)
 class RemovedEvent(Event):
     pass
-
 
 
 class ISubscriberEvent(zope.interface.Interface):
@@ -221,6 +227,7 @@ class ISubscriberEvent(zope.interface.Interface):
 
     original_event = zope.interface.Attribute(
         "The ObjectEvent related to this event")
+
 
 class IAfterIdAddedEvent(ISubscriberEvent):
     """
@@ -237,6 +244,7 @@ class IAfterIdAddedEvent(ISubscriberEvent):
     idmap = zope.interface.Attribute(
         "The dictionary that holds an (utility -> id) mapping of created ids")
 
+
 class IBeforeIdRemovedEvent(ISubscriberEvent):
     """
     Fired before any utility removes an object's unique ID.
@@ -246,12 +254,14 @@ class IBeforeIdRemovedEvent(ISubscriberEvent):
     one utility will remove an ID.
     """
 
+
 @zope.interface.implementer(IBeforeIdRemovedEvent)
 class BeforeIdRemovedEvent(object):
 
     def __init__(self, o, event):
         self.object = o
         self.original_event = event
+
 
 @zope.interface.implementer(IAfterIdAddedEvent)
 class AfterIdAddedEvent(object):

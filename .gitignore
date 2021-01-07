@@ -1,21 +1,25 @@
-.installed.cfg
-.dir-locals.el
-.pydevproject
-.project
-*.egg-info
+# Generated from:
+# https://github.com/zopefoundation/meta/tree/master/config/pure-python
+*.egg-info/
+*.profraw
 *.pyc
 *.pyo
-*.so
-*.sublime-*
 .coverage
-.runtimes
-htmlcov/
+.coverage.*
+.eggs/
+.installed.cfg
+.mr.developer.cfg
+.tox/
+__pycache__/
 bin/
+build/
+coverage.xml
 develop-eggs/
-wheelhouse/
 dist/
+docs/_build
 eggs/
-include/
+htmlcov/
 lib/
+lib64
 parts/
-doc/_build
+pyvenv.cfg

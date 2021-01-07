@@ -5,7 +5,9 @@
 2.0.1 (unreleased)
 ==================
 
-- Nothing changed yet.
+- Add support for Python 3.6, 3.7, 3.8 and 3.9.
+
+- Drop support for running the tests using `python setup.py test`.
 
 
 2.0.0 (2016-12-16)

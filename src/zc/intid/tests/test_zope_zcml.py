@@ -22,6 +22,7 @@ from zc.intid.utility import IntIds
 
 import zope.event
 
+
 class TestZopeIntidZcml(unittest.TestCase):
 
     _BARE_IMPLEMENTS = tuple(sorted(zope.interface.implementedBy(IntIds)))
@@ -55,20 +56,20 @@ class TestZopeIntidZcml(unittest.TestCase):
         self._check_only_zc_interface()
 
         zope_intid_interfaces = types.ModuleType('zope.intid.interfaces')
-        class I(zope.interface.Interface):
+
+        class Iface(zope.interface.Interface):
             pass
-        zope_intid_interfaces.IIntIds = I
+        zope_intid_interfaces.IIntIds = Iface
 
         sys.modules['zope.intid'] = types.ModuleType('zope.intid')
         sys.modules['zope.intid.interfaces'] = zope_intid_interfaces
-
 
         try:
             self._check_only_zc_interface()
             self._load_file()
 
             implements_now = tuple(zope.interface.implementedBy(IntIds))
-            self.assertIn(I, implements_now)
+            self.assertIn(Iface, implements_now)
 
             # Cleanup
             zope.interface.classImplementsOnly(IntIds, *self._BARE_IMPLEMENTS)
@@ -79,13 +80,7 @@ class TestZopeIntidZcml(unittest.TestCase):
         self._check_only_zc_interface()
 
 
-
 def test_suite():
     return unittest.TestSuite([
         unittest.makeSuite(TestZopeIntidZcml),
     ])
-
-test_suite() # coverage
-
-if __name__ == '__main__': # pragma: no cover
-    unittest.main()

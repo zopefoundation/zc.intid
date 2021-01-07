@@ -86,7 +86,6 @@ class TestIntIds(unittest.TestCase):
             u.getId(proxied)
         self.assertIs(ex.exception.args[0], proxied)
 
-
         obj = P()
         obj.iid = iid
         proxied = Proxy(obj,
@@ -156,10 +155,10 @@ class TestIntIds(unittest.TestCase):
         self.assertEqual(event.id, uid)
 
     def test_btree_long(self):
-        # This is a somewhat arkward test, that *simulates* the border case
+        # This is a somewhat awkward test, that *simulates* the border case
         # behaviour of the generateId method
         u = self.createIntIds()
-        u._randrange = lambda x,y:int(2**31-1)
+        u._randrange = lambda x, y: int(2**31-1)
 
         # The chosen int is exactly the largest number possible that is
         # delivered by the randint call in the code
@@ -223,6 +222,7 @@ class TestIntIds(unittest.TestCase):
 
         def generator(utility, odd):
             gen = utility.generateId
+
             def generateId(ob):
                 iid = gen(ob)
                 while (iid % 2) != int(odd):
@@ -256,7 +256,7 @@ class TestIntIds(unittest.TestCase):
         u1.unregister(obj)
         self.assertIsNone(obj.id1)
         self.assertEqual(obj.id2, uid2)
-        self.assertIs(u2.getObject(uid2),obj)
+        self.assertIs(u2.getObject(uid2), obj)
 
     def test_duplicate_id_generation(self):
         # If an overridden ``generateId`` method generates an id that's
@@ -343,8 +343,3 @@ def test_suite():
         unittest.makeSuite(TestIntIds),
         unittest.makeSuite(TestIntIds64),
     ])
-
-test_suite() # coverage
-
-if __name__ == '__main__': # pragma: no cover
-    unittest.main()

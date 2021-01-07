@@ -39,7 +39,7 @@ try:
     # want to propagate this exception that indicates a corrupt database
     # (as opposed to a corrupt IntIds)
     from ZODB.POSException import POSKeyError as _POSKeyError
-except ImportError: # pragma: no cover (we run tests with ZODB installed)
+except ImportError:  # pragma: no cover (we run tests with ZODB installed)
     # In practice, ZODB will probably be installed. But if not,
     # then POSKeyError can never be generated, so use a unique
     # exception that we'll never catch.
@@ -51,6 +51,7 @@ from zope.security.proxy import removeSecurityProxy as unwrap
 import BTrees
 import persistent
 import random
+
 
 @implementer(IIntIds, IIntIdsSubclass)
 class IntIds(persistent.Persistent):
@@ -139,7 +140,7 @@ class IntIds(persistent.Persistent):
         self.refs[uid] = ob
         try:
             setattr(ob, self.attribute, uid)
-        except:
+        except:  # noqa: E722 do not use bare 'except'
             # cleanup our mess
             del self.refs[uid]
             raise
