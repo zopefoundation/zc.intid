@@ -238,9 +238,3 @@ def test_suite():
     return unittest.TestSuite([
         unittest.makeSuite(TestSubscribers),
     ])
-
-
-test_suite()  # coverage
-
-if __name__ == '__main__':  # pragma: no cover
-    unittest.main()

@@ -343,9 +343,3 @@ def test_suite():
         unittest.makeSuite(TestIntIds),
         unittest.makeSuite(TestIntIds64),
     ])
-
-
-test_suite()  # coverage
-
-if __name__ == '__main__':  # pragma: no cover
-    unittest.main()
