@@ -26,6 +26,7 @@ version = read("version.txt").strip()
 tests_require = [
     'zope.configuration',
     'zope.site',
+    'zope.testrunner',
 ]
 
 setuptools.setup(
