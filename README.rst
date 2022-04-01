@@ -6,7 +6,7 @@ zc.intid - Reduced-conflict integer id utility
     :target: https://github.com/zopefoundation/zc.intid/actions/workflows/tests.yml
 
 .. image:: https://readthedocs.org/projects/zcintid/badge/?version=latest
-        :target: http://zcintid.readthedocs.io/en/latest/?badge=latest
+        :target: https://zcintid.readthedocs.io/
         :alt: Documentation Status
 
 This package provides an API to create integer ids for any object.
