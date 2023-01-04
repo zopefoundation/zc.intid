@@ -17,13 +17,11 @@ Conflict-reducing unique integer ID utility.
 See :mod:`zc.intid.interfaces`.
 """
 # BWC imports/re-exports
-from zc.intid.interfaces import IIntIdsQuery
-from zc.intid.interfaces import IIntIdsSet
-from zc.intid.interfaces import IIntIdsManage
-from zc.intid.interfaces import IIntIds
-
-from zc.intid.interfaces import IIntIdsSubclass
-
+from zc.intid.interfaces import IIdAddedEvent
 from zc.intid.interfaces import IIdEvent
 from zc.intid.interfaces import IIdRemovedEvent
-from zc.intid.interfaces import IIdAddedEvent
+from zc.intid.interfaces import IIntIds
+from zc.intid.interfaces import IIntIdsManage
+from zc.intid.interfaces import IIntIdsQuery
+from zc.intid.interfaces import IIntIdsSet
+from zc.intid.interfaces import IIntIdsSubclass

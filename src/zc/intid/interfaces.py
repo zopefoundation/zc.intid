@@ -27,7 +27,6 @@ The :class:`IIntIdsSubclass` and event interfaces are new.
 """
 
 import zope.interface
-
 import zope.intid.interfaces
 
 
@@ -199,7 +198,7 @@ class IIdAddedEvent(IIdEvent):
     """
 
 
-class Event(object):
+class Event:
 
     def __init__(self, object, idmanager, id):
         self.object = object
@@ -256,7 +255,7 @@ class IBeforeIdRemovedEvent(ISubscriberEvent):
 
 
 @zope.interface.implementer(IBeforeIdRemovedEvent)
-class BeforeIdRemovedEvent(object):
+class BeforeIdRemovedEvent:
 
     def __init__(self, o, event):
         self.object = o
@@ -264,7 +263,7 @@ class BeforeIdRemovedEvent(object):
 
 
 @zope.interface.implementer(IAfterIdAddedEvent)
-class AfterIdAddedEvent(object):
+class AfterIdAddedEvent:
 
     def __init__(self, o, event, idmap=None):
         self.object = o
