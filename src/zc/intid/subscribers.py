@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 A set of subscribers for the object :mod:`zope.lifecycleevent` events.
 
@@ -28,9 +27,6 @@ In particular, a few things are done just like :mod:`zope.intid`:
    the utility will broadcast its own events. Thus these subscribers
    generate at least three events for every lifecycle event.
 """
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
 
 from zope import component
 from zope.component import handle

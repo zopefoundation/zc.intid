@@ -67,13 +67,13 @@ def createSiteManager(folder, setsite=False):
     return folder.getSiteManager()
 
 
-class KeyReferenceStub(object):
+class KeyReferenceStub:
 
     def __init__(self, obj):
         self.obj = obj
 
 
-class ReferenceSetupMixin(object):
+class ReferenceSetupMixin:
     """Registers adapters ILocation->IConnection and IPersistent->IReference"""
 
     def setUp(self):
@@ -229,5 +229,5 @@ class TestSubscribers(ReferenceSetupMixin, unittest.TestCase):
 
 def test_suite():
     return unittest.TestSuite([
-        unittest.makeSuite(TestSubscribers),
+        unittest.defaultTestLoader.loadTestsFromTestCase(TestSubscribers),
     ])

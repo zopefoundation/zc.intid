@@ -36,7 +36,7 @@ from zc.intid.interfaces import IntIdMismatchError
 from zc.intid.utility import IntIds
 
 
-class P(object):
+class P:
     pass
 
 
@@ -277,7 +277,7 @@ class TestIntIds(unittest.TestCase):
     def test_poskeyerror_propagates_getObject(self):
         from ZODB.POSException import POSKeyError
 
-        class BadDict(object):
+        class BadDict:
             def __getitem__(self, k):
                 raise POSKeyError()
 
@@ -289,7 +289,7 @@ class TestIntIds(unittest.TestCase):
     def test_poskeyerror_propagates_queryId(self):
         from ZODB.POSException import POSKeyError
 
-        class BadDict(object):
+        class BadDict:
             def __getitem__(self, k):
                 raise POSKeyError()
 
@@ -307,7 +307,7 @@ class TestIntIds(unittest.TestCase):
         from ZODB.POSException import POSKeyError
         u = self.createIntIds()
 
-        class WithSlots(object):
+        class WithSlots:
             __slots__ = ()
 
         obj = WithSlots()
@@ -315,7 +315,7 @@ class TestIntIds(unittest.TestCase):
         self.assertRaises(AttributeError, u.register, obj)
         self.assertEqual(0, len(u))
 
-        class Broken(object):
+        class Broken:
             def __setattr__(self, name, value):
 
                 raise POSKeyError()
@@ -333,6 +333,6 @@ class TestIntIds64(TestIntIds):
 
 def test_suite():
     return unittest.TestSuite([
-        unittest.makeSuite(TestIntIds),
-        unittest.makeSuite(TestIntIds64),
+        unittest.defaultTestLoader.loadTestsFromTestCase(TestIntIds),
+        unittest.defaultTestLoader.loadTestsFromTestCase(TestIntIds64),
     ])
