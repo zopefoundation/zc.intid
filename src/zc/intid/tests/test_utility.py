@@ -17,30 +17,23 @@ Tests for the unique id utility.
 """
 
 
-import BTrees
-
 import unittest
+
+import BTrees
+import zope.event
+from zope.interface.verify import verifyObject
+from zope.intid.interfaces import IntIdMissingError
+from zope.intid.interfaces import ObjectMissingError
+from zope.security.checker import CheckerPublic
+from zope.security.proxy import Proxy
 
 from zc.intid.interfaces import IIdAddedEvent
 from zc.intid.interfaces import IIdRemovedEvent
 from zc.intid.interfaces import IIntIds
 from zc.intid.interfaces import IIntIdsSubclass
-from zc.intid.interfaces import IntIdMismatchError
 from zc.intid.interfaces import IntIdInUseError
-
-
+from zc.intid.interfaces import IntIdMismatchError
 from zc.intid.utility import IntIds
-
-from zope.interface.verify import verifyObject
-
-
-from zope.security.checker import CheckerPublic
-from zope.security.proxy import Proxy
-
-from zope.intid.interfaces import IntIdMissingError
-from zope.intid.interfaces import ObjectMissingError
-
-import zope.event
 
 
 class P(object):

@@ -18,9 +18,9 @@ Tests for the zope-intid.zcml file.
 import sys
 import unittest
 
-from zc.intid.utility import IntIds
-
 import zope.event
+
+from zc.intid.utility import IntIds
 
 
 class TestZopeIntidZcml(unittest.TestCase):
@@ -38,6 +38,7 @@ class TestZopeIntidZcml(unittest.TestCase):
 
     def _load_file(self):
         from zope.configuration import xmlconfig
+
         import zc.intid
         xmlconfig.file('zope-intid.zcml', package=zc.intid)
 

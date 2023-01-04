@@ -27,7 +27,6 @@ The :class:`IIntIdsSubclass` and event interfaces are new.
 """
 
 import zope.interface
-
 import zope.intid.interfaces
 
 

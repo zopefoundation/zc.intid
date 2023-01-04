@@ -28,27 +28,23 @@ In particular, a few things are done just like :mod:`zope.intid`:
    the utility will broadcast its own events. Thus these subscribers
    generate at least three events for every lifecycle event.
 """
-from __future__ import print_function, absolute_import, division
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 from zope import component
-
 from zope.component import handle
-
-from zope.lifecycleevent.interfaces import IObjectAddedEvent
-from zope.lifecycleevent.interfaces import IObjectRemovedEvent
-
-from zope.location.interfaces import ILocation
-
 from zope.event import notify
-
 from zope.intid.interfaces import IntIdAddedEvent
 from zope.intid.interfaces import IntIdRemovedEvent
-
 from zope.keyreference.interfaces import IKeyReference
+from zope.lifecycleevent.interfaces import IObjectAddedEvent
+from zope.lifecycleevent.interfaces import IObjectRemovedEvent
+from zope.location.interfaces import ILocation
 
-from zc.intid.interfaces import IIntIds
-from zc.intid.interfaces import BeforeIdRemovedEvent
 from zc.intid.interfaces import AfterIdAddedEvent
+from zc.intid.interfaces import BeforeIdRemovedEvent
+from zc.intid.interfaces import IIntIds
 
 
 def _utilities_and_key(ob):

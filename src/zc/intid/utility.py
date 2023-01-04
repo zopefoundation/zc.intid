@@ -20,19 +20,19 @@ This functionality can be used in cataloging.
 
 """
 
+from zope.event import notify
+from zope.interface import implementer
+from zope.intid.interfaces import IntIdMissingError
+from zope.intid.interfaces import ObjectMissingError
+
 from zc.intid.interfaces import AddedEvent
 from zc.intid.interfaces import IIntIds
 from zc.intid.interfaces import IIntIdsSubclass
-from zc.intid.interfaces import IntIdMismatchError
 from zc.intid.interfaces import IntIdInUseError
+from zc.intid.interfaces import IntIdMismatchError
 from zc.intid.interfaces import RemovedEvent
 
-from zope.event import notify
 
-from zope.interface import implementer
-
-from zope.intid.interfaces import IntIdMissingError
-from zope.intid.interfaces import ObjectMissingError
 try:
     # POSKeyError is a subclass of KeyError; in the cases where we
     # catch KeyError for an item missing from a BTree, we still
@@ -46,11 +46,11 @@ except ImportError:  # pragma: no cover (we run tests with ZODB installed)
     class _POSKeyError(BaseException):
         pass
 
-from zope.security.proxy import removeSecurityProxy as unwrap
+import random
 
 import BTrees
 import persistent
-import random
+from zope.security.proxy import removeSecurityProxy as unwrap
 
 
 @implementer(IIntIds, IIntIdsSubclass)

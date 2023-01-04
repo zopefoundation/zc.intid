@@ -15,11 +15,38 @@
 Tests for the lifecycle subscribers.
 """
 
-from persistent.interfaces import IPersistent
 import unittest
 
-import zc.intid
+from persistent.interfaces import IPersistent
+from zope.component import eventtesting
+from zope.component import getGlobalSiteManager
+from zope.component import getSiteManager
+from zope.component import handle
+from zope.component import provideAdapter
+from zope.component import provideHandler
+from zope.component import testing as componenttesting
+from zope.component.hooks import resetHooks
+from zope.component.hooks import setHooks
+from zope.component.hooks import setSite
+from zope.component.interfaces import ISite
+from zope.configuration import xmlconfig
+from zope.interface import Interface
+from zope.interface.interfaces import IComponentLookup
+from zope.intid.interfaces import IIntIdEvent
+from zope.intid.interfaces import IntIdAddedEvent
+from zope.intid.interfaces import IntIdRemovedEvent
+from zope.intid.interfaces import ObjectMissingError
+from zope.keyreference.interfaces import IKeyReference
+from zope.lifecycleevent import ObjectAddedEvent
+from zope.lifecycleevent import ObjectRemovedEvent
+from zope.site.folder import Folder
+from zope.site.folder import rootFolder
+from zope.site.interfaces import IFolder
+from zope.site.site import LocalSiteManager
+from zope.site.site import SiteManagerAdapter
+from zope.traversing.testing import setUp as traversingSetUp
 
+import zc.intid
 from zc.intid.interfaces import AddedEvent
 from zc.intid.interfaces import AfterIdAddedEvent
 from zc.intid.interfaces import BeforeIdRemovedEvent
@@ -27,42 +54,9 @@ from zc.intid.interfaces import IIdEvent
 from zc.intid.interfaces import IIntIds
 from zc.intid.interfaces import ISubscriberEvent
 from zc.intid.interfaces import RemovedEvent
-
 from zc.intid.subscribers import addIntIdSubscriber
 from zc.intid.subscribers import removeIntIdSubscriber
-
 from zc.intid.utility import IntIds
-
-from zope.component import getSiteManager
-from zope.component import getGlobalSiteManager
-from zope.component import handle
-from zope.component import provideAdapter
-from zope.component import provideHandler
-from zope.component import testing as componenttesting
-from zope.component import eventtesting
-from zope.component.hooks import setSite, setHooks, resetHooks
-from zope.component.interfaces import ISite
-
-from zope.configuration import xmlconfig
-
-from zope.interface import Interface
-from zope.interface.interfaces import IComponentLookup
-
-from zope.intid.interfaces import IIntIdEvent
-from zope.intid.interfaces import IntIdAddedEvent
-from zope.intid.interfaces import IntIdRemovedEvent
-from zope.intid.interfaces import ObjectMissingError
-
-from zope.keyreference.interfaces import IKeyReference
-
-from zope.lifecycleevent import ObjectAddedEvent
-from zope.lifecycleevent import ObjectRemovedEvent
-
-from zope.site.folder import rootFolder, Folder
-from zope.site.interfaces import IFolder
-from zope.site.site import SiteManagerAdapter, LocalSiteManager
-
-from zope.traversing.testing import setUp as traversingSetUp
 
 
 def createSiteManager(folder, setsite=False):
