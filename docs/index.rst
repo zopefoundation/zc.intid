@@ -2,8 +2,8 @@
  What is zc.intid?
 =====================
 
-.. image:: https://travis-ci.org/zopefoundation/zc.intid.svg?branch=master
-    :target: https://travis-ci.org/zopefoundation/zc.intid
+.. image:: https://github.com/zopefoundation/zc.intid/actions/workflows/tests.yml/badge.svg
+    :target: https://github.com/zopefoundation/zc.intid/actions/workflows/tests.yml
 
 zc.intid provides an API to create integer ids for any object.
 Objects can later be looked up by their id as well.  This functionality
